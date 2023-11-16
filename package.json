@@ -1,5 +1,8 @@
 {
   "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/validator": "^13.11.6",
+    "nodemon": "^3.0.1",
     "typescript": "^5.2.2"
   },
   "name": "redsocial",
@@ -7,12 +10,25 @@
   "description": "red social con MERN STACK",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon dist/index.js"
   },
   "repository": {
     "type": "git",
     "url": "redSocial"
   },
   "author": "Daniel Ruben",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/cors": "^2.8.16",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.29.4",
+    "mongoose": "^8.0.0",
+    "mongoose-pagination": "^1.0.0",
+    "multer": "^1.4.5-lts.1",
+    "validator": "^13.11.0"
+  }
 }
