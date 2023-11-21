@@ -29,9 +29,9 @@ app.get('/ruta-prueba', (req, res) => {
 
 //configuracion de rutas
 
-app.use('/api', routerUser);
-app.use('/api', routerPublication);
-app.use('/api', routerFollow);
+app.use('/api/user', routerUser);
+app.use('/api/publication', routerPublication);
+app.use('/api/follow', routerFollow);
 
 
 //escuchar peticiones http

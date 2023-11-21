@@ -9,18 +9,21 @@ const userSchema = new Schema({
     nick: {
         type: String, require: true
     },
-    enail: {
+    email: {
         type: String, require: true
     },
-    role:{
-    type: String, default: 'role_user'
-},
+    password: {
+        type: String, require: true
+    },
+    role: {
+        type: String, default: 'role_user'
+    },
     image: {
-    type: String, default: 'default.png'
-},
+        type: String, default: 'default.png'
+    },
     created_at: {
-    type: Date, default: Date.now
-}
+        type: Date, default: Date.now
+    }
 
 });
-export default model('User', userSchema,'users');//nombre del modelo, formato del modelo (esquema), nombre de la coleccion de datos
+export default model('User', userSchema, 'users');//nombre del modelo, formato del modelo (esquema), nombre de la coleccion de datos
