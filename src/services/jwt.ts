@@ -3,11 +3,11 @@ import moment from 'moment';
 import crypto from 'crypto';
 
 
-//clave secreta
-const secret = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+//clave secreta aleatoria y rotativa mediante metodo crypto
+export const secret = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
 
 //funcion para crear token
-const createToken = (user: any) => {
+export const createToken = (user: any) => {
     const payLoad = {
         id: user._id,
         name: user.name,
@@ -24,4 +24,3 @@ const createToken = (user: any) => {
 
 }
 
-export default createToken;
