@@ -27,3 +27,11 @@ npm i cors
 
 npm i nodemon --save-d
 
+usuario de prueba 1:
+rubenrivasdr@gmail.com
+1234rivassDr
+
+usuario de prueba 2
+rquevedo@gmail.com
+1234radmi
+

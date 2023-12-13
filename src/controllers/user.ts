@@ -3,7 +3,9 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import User from '../models/user';
 import { createToken } from '../services/jwt'
-import paginate from 'mongoose-paginate-v2';
+import fs from 'fs';
+import path from 'path';
+
 
 // extender el tipo Request para incluir la propiedad user y que no de error, 
 //ya que TypeScript no reconoce la propiedad user 
@@ -37,7 +39,7 @@ export const register = async (req: Request, res: Response) => {
         }
 
         //control de usuarios duplicados
-        User.find({
+        await User.find({
             $or: [
                 { email: params.email!.toLocaleLowerCase() },
                 { nick: params.nick!.toLocaleLowerCase() }
@@ -69,7 +71,7 @@ export const register = async (req: Request, res: Response) => {
             //crear objeto de usuario
             let userToSave = new User(params);
             //guardar en la bd directamente
-            userToSave.save();
+            await userToSave.save();
             return res.status(200).json({
                 status: 'success',
                 message: 'Registro de usuario',
@@ -267,4 +269,98 @@ export const update = async (req: Request, res: Response) => {
 
         });
     });
+}
+
+//metodo para subir imagenes
+export const upLoap = async (req: Request, res: Response) => {
+    try {
+        //recoger imagenes y comprobar si existen
+        if (!req.file && !req.files) return res.status(400).json({
+            status: "error",
+            message: "Peticion no incluye imagen"
+        });
+
+        //conseguir el nombre del archivos
+
+        let nameFile = req.file!.originalname;//con ! le decimos a TS que el req.file no es indefinido, de lo contrardio dara error
+        let fileSplit = nameFile.split('\.');
+        let nameExt = fileSplit[1];//segundo indice del nombre del arhivo despues de separarlo
+        //4: validar si la extencion correcta, sino se cumple lo eliminamos con un metodo nativo de node unlink
+        if (nameExt !== 'png' && nameExt !== 'jpg'
+            && nameExt !== 'jpeg' && nameExt !== 'svg'
+            && nameExt !== 'gif') {
+            const filePath = req.file!.path;
+
+            fs.unlinkSync(filePath);
+            /*otra manera
+              fs.unlink(req.file!.path, (error) => {
+                return res.status(400).json({
+                    status: "error",
+                    error,
+                    extencion: nameExt,
+                    message: "Formato de archivo no válido"
+                });
+            })
+             */
+            return res.status(400).json({
+                status: "error",
+                extencion: nameExt,
+                message: "Formato de archivo no válido"
+            });
+
+        } else {
+            //5: actualiza el articulo si todo sale bien
+            let id = (req.user as any).id;// Realiza un cast a 'any' para acceder a '_id'
+            const userUpDated = await User.findByIdAndUpdate({ _id: id }, { image: req.file!.filename }, { new: true });
+            if (!userUpDated) {
+                return res.status(500).send({
+                    status: "error",
+                    message: "Error en la subida del avatar",
+                    user: req.user,
+
+                });
+            }
+            console.log(userUpDated);
+            return res.status(200).send({
+                status: "success",
+                message: 'archivo de avatar subido correctamente',
+                user: userUpDated,
+                image: req.file,
+            });
+        }
+
+    } catch (error) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Error al subir la imagen',
+            error
+
+        });
+
+    }
+}
+
+//metodo para vizualizar imagenes
+export const avatar = (req: Request, res: Response) => {
+    //sacar el parametro de a url
+    const file = req.params.file;
+    //montar el path real de la imagen
+    const filePath = './dist/uploads/avatars/' + file;
+    //const filePath = path.resolve(__dirname, 'uploads', 'avatars', file);
+
+    //comprobar que el archivo existe
+    fs.stat(filePath, (error, exist) => {
+        if (!exist) {
+            return res.status(404).send({
+                status: 'error',
+                message: 'No existe la imagen',
+                error
+            })
+        }
+        //devolver un archivo
+        return res.sendFile(path.resolve(filePath));
+    });
+
+
+
 }
