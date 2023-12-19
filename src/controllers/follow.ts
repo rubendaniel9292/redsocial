@@ -1,6 +1,10 @@
+import { followsUsersId, followThisUser } from './../services/followUsersIds';
 import { Request, Response } from 'express';
 import follow from '../models/follow';
+
 import user from '../models/user';
+import paginate from 'mongoose-paginate-v2';
+
 //metodos de pruebas
 export const pruebaFollow = (req: Request, res: Response) => {
     return res.status(200).send({
@@ -84,7 +88,85 @@ export const unFollow = async (req: Request, res: Response) => {
     }
     ;
 }
-//listado de usuarios que sigo
-//listaod de usuarios que me siguen
+//accion listado de usuarios que cualquier usuario esta siguiendo
+export const following = async (req: Request, res: Response) => {
+    try {
+        //sacar el id del usuaio dentificado
+        let identity = (req.user as any).id;
+        //comprobar si me llega el id de la url
+        if (req.params.id) identity = req.params.id;
+        //comprobar si me llega la pagina
+        let page = 1;
+        if (req.params.page) page = parseInt(req.params.page);
+        //definir usuario por pagina
+        const itemPerPage = 5;
+        //Puede ser más adecuado para situaciones donde la paginación es simple y directa
+        const total = await follow.countDocuments();
+        //calcular el indice de inicio de la paginacion
+        let itemPage = 5;
+        const starIndex = (page - 1) * itemPage;
+        let result = await follow.find({ user: identity })
+            .populate('user followed', '-password -role -__v')
+            .skip(starIndex).limit(itemPage);
+        //listado de usuarios me siguen a mi mediante un array de usuario de los que me siguen y sigo como identificado
+        let followuserid = await followsUsersId(identity);
+        return res.status(200).json({
+            status: "success",
+            message: "Listado de usuario que estoy siguiendo",
+            result,
+            total,
+            pages: Math.ceil(total / itemPerPage),
+            user_follow_info: followuserid
+        });
 
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            message: "No se ha cargado el listados de usuario"
+        });
+
+    }
+}
+//listaod de usuarios que siguen a cualquier otro usuario (soy seguido mis seguidores)
+
+export const followers = async (req: Request, res: Response) => {
+    try {
+        //sacar el id del usuaio dentificado
+        let identity = (req.user as any).id;
+        //comprobar si me llega el id de la url
+        if (req.params.id) identity = req.params.id;
+        //comprobar si me llega la pagina
+        let page = 1;
+        if (req.params.page) page = parseInt(req.params.page);
+        //definir usuario por pagina
+        const itemPerPage = 5;
+
+        //Puede ser más adecuado para situaciones donde la paginación es simple y directa
+        const total = await follow.countDocuments();
+        //calcular el indice de inicio de la paginacion
+        let itemPage = 5;
+        const starIndex = (page - 1) * itemPage;
+        //consultar usuarios seguidos
+        let result = await follow.find({ followed: identity })
+            .populate('user followed', '-password -role -__v')
+            .skip(starIndex).limit(itemPage);
+        //listado de usuarios me siguen a mi mediante un array de usuario de los que me siguen y sigo como identificado
+        let followuserid = await followsUsersId(identity);
+        return res.status(200).json({
+            status: "success",
+            message: "Listado de usuario que me siguen",
+            result,
+            total,
+            pages: Math.ceil(total / itemPerPage),
+            user_follow_info: followuserid
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            message: "No se ha cargado el listado de usuarios que siguen a cualquier otro usuario"
+        });
+    }
+}
 

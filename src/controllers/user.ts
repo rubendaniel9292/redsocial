@@ -5,6 +5,7 @@ import User from '../models/user';
 import { createToken } from '../services/jwt'
 import fs from 'fs';
 import path from 'path';
+import { followThisUser, followsUsersId } from './../services/followUsersIds';
 
 
 // extender el tipo Request para incluir la propiedad user y que no de error, 
@@ -145,15 +146,18 @@ export const login = async (req: Request, res: Response) => {
 
 //perfil
 
-export const profile = (req: Request, res: Response) => {
+export const profile = async (req: Request, res: Response) => {
     //recibe parametros del id del usuario por url
     const id = req.params.id;
+    const userId = (req.user as any).id;
     //consulta para sacar los datos del usuario
-    User.findById(id).select({ 'password': 0, 'role': 0 }).exec().then((userProfile: any) => {
-        //posteriormente devolver informacion de follows
+    await User.findById(id).select({ 'password': 0, 'role': 0 }).then(async(userProfile: any) => {
+        //posteriormente devolver informacion de follows, saca el id del usuario del identificado y el del perfil
+        const followInfo  =  await followThisUser(userId, id);
         return res.status(200).json({
             status: "success",
-            user: userProfile
+            user: userProfile,
+            followInfo
         })
     }).catch((error: any) => {
         return res.status(404).json({
@@ -162,7 +166,6 @@ export const profile = (req: Request, res: Response) => {
             message: 'No existe el usuario'
         });
     });
-    //devolver el resultado
 
 }
 
@@ -192,7 +195,10 @@ export const list = async (req: Request, res: Response) => {
         */
 
 
-        //posteriormente info de seguimiento
+        //posteriormente info de seguimiento, usuarios que sigo y los que me siguen
+        let identity = (req.user as any).id;
+        let followuserid = await followsUsersId(identity);
+
 
         return res.status(200).json({
             status: "success",
@@ -201,7 +207,8 @@ export const list = async (req: Request, res: Response) => {
             page,
             itemPage,
             total,
-            pages: Math.ceil(total / itemPage)
+            pages: Math.ceil(total / itemPage),
+            followInfo: followuserid
 
         })
 
