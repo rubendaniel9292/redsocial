@@ -5,7 +5,7 @@ import User from '../models/user';
 import { createToken } from '../services/jwt'
 import fs from 'fs';
 import path from 'path';
-import { followThisUser, followsUsersId } from './../services/followUsersIds';
+import { followThisUser, followsUsersId } from '../services/followServices';
 
 
 // extender el tipo Request para incluir la propiedad user y que no de error, 

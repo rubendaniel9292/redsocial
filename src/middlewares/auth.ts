@@ -1,9 +1,9 @@
 import jwt from 'jwt-simple';
 import moment from 'moment';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { secret } from '../services/jwt'
 //midleware funcion de autenticacion
-export const auth = (req: Request, res: Response, next: any) => {
+export const auth = (req: Request, res: Response, next: NextFunction) => {
     //comprobar si me llega la cabecera de auth
     if (!req.headers.authorization) {
         return res.status(403).json({
@@ -12,11 +12,11 @@ export const auth = (req: Request, res: Response, next: any) => {
         });
     }
     //decodificar el token, limpiando de comillas
-    let token = req.headers.authorization.replace(/['"]+g/, '');
+    let token = req.headers.authorization.replace(/['"]+g/, '').trim();
 
     try {
+        console.log('Token:', token);
         let payLoad = jwt.decode(token, secret);
-
         //comprobar la expiracion del token
         if (payLoad.exp <= moment().unix()) {
             return res.status(401).json({
@@ -24,15 +24,19 @@ export const auth = (req: Request, res: Response, next: any) => {
             });
         };
         //agregar datos de usuario a reques
-        (req as any).user = payLoad;
+        req.user = payLoad;
+        console.log('Usuario añadido a la req:', (req as any).user);
+        //Pasar a la ejecución del siguiente middleware o controlador
+        next();
+        
     } catch (error) {
+        console.log('Error en auth middleware:', error);
         return res.status(403).json({
             status: 'error', message: 'token inválido'
         });
     };
 
 
-    next();
-    //pasar a la ejeccuion
+
 
 }

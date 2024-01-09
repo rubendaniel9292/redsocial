@@ -23,12 +23,14 @@ export const followsUsersId = async (identytUserId: any) => {
         followers.forEach(follow => {
             followersClean.push(follow.user)
         });
-
+        console.log('Following Clean:', followingClean);
+        console.log('Followers Clean:', followersClean);
 
         return { following: followingClean, followers: followersClean };
 
 
     } catch (error) {
+        console.error('Error en followsUsersId:', error);
         return false
     }
 }
@@ -38,13 +40,13 @@ export const followThisUser = async (identityUserId: any, profileUserId: any) =>
         //comprobar si un usuario me sige y si yo lo sigo
         //sacar info de seguimiento
         //consulta de usuario que estoy siguiendo como usuario identificado
-        
+
         //saber si yo como usuario lo sigo 
         let following = await follow.findOne({ 'user': identityUserId, 'followed': profileUserId });
-    
+
         //consulta de usuario saber si me sigue a mi
         let followers = await follow.findOne({ 'user': profileUserId, 'followed': identityUserId });//usuario identificado
-            
+
         return { following, followers };
 
     }

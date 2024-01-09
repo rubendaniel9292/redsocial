@@ -1,9 +1,8 @@
-import { followsUsersId, followThisUser } from './../services/followUsersIds';
+import { followsUsersId, followThisUser } from '../services/followServices';
 import { Request, Response } from 'express';
 import follow from '../models/follow';
 
-import user from '../models/user';
-import paginate from 'mongoose-paginate-v2';
+
 
 //metodos de pruebas
 export const pruebaFollow = (req: Request, res: Response) => {
