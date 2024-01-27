@@ -1,6 +1,7 @@
 import { followsUsersId, followThisUser } from '../services/followServices';
 import { Request, Response } from 'express';
 import follow from '../models/follow';
+import mongoose from 'mongoose';
 
 
 
@@ -20,11 +21,16 @@ export const save = async (req: Request, res: Response) => {
         //obeter el usuario identificado
         const identity = req.user as any;
         // Verificar si el usuario identificado ya sigue al otro usuario
+        console.log('identity.id:', identity.id);
+        console.log('params.followed:', params.followed);
+
         const existingFollow = await follow.findOne({
             user: identity.id,
             followed: params.followed
         });
+        
         if (existingFollow) {
+            console.log('existe el follow: ',existingFollow);
             // El usuario ya sigue al otro usuario
             return res.status(400).json({
                 status: 'error',
@@ -34,14 +40,15 @@ export const save = async (req: Request, res: Response) => {
         //crear objeto del modelo follow
         let userToFollow = new follow({
             user: identity.id,
-            followed: params.followed
+            followed: params.followed,
+            //followed: new mongoose.Types.ObjectId(params.followed),
         });
         const followStored = await userToFollow.save();
         return res.status(200).send({
             status: 'succes',
             message: 'Metodo dar follow: usuario seguido exitosamente',
             identity: req.user,
-            followStored
+            follow: followStored
         });
     } catch (error) {
         return res.status(500).json({
@@ -105,7 +112,7 @@ export const following = async (req: Request, res: Response) => {
         let itemPage = 5;
         const starIndex = (page - 1) * itemPage;
         let result = await follow.find({ user: identity })
-            .populate('user followed', '-password -role -__v')
+            .populate('user followed', '-password -role -__v -email')
             .skip(starIndex).limit(itemPage);
         //listado de usuarios me siguen a mi mediante un array de usuario de los que me siguen y sigo como identificado
         let followuserid = await followsUsersId(identity);
@@ -148,7 +155,7 @@ export const followers = async (req: Request, res: Response) => {
         const starIndex = (page - 1) * itemPage;
         //consultar usuarios seguidos
         let result = await follow.find({ followed: identity })
-            .populate('user followed', '-password -role -__v')
+            .populate('user followed', '-password -role -__v -email')
             .skip(starIndex).limit(itemPage);
         //listado de usuarios me siguen a mi mediante un array de usuario de los que me siguen y sigo como identificado
         let followuserid = await followsUsersId(identity);

@@ -6,6 +6,8 @@ import { createToken } from '../services/jwt'
 import fs from 'fs';
 import path from 'path';
 import { followThisUser, followsUsersId } from '../services/followServices';
+import follow from '../models/follow';
+import publication from '../models/publication';
 
 
 // extender el tipo Request para incluir la propiedad user y que no de error, 
@@ -151,9 +153,9 @@ export const profile = async (req: Request, res: Response) => {
     const id = req.params.id;
     const userId = (req.user as any).id;
     //consulta para sacar los datos del usuario
-    await User.findById(id).select({ 'password': 0, 'role': 0 }).then(async(userProfile: any) => {
+    await User.findById(id).select({ 'password': 0, 'role': 0 }).then(async (userProfile: any) => {
         //posteriormente devolver informacion de follows, saca el id del usuario del identificado y el del perfil
-        const followInfo  =  await followThisUser(userId, id);
+        const followInfo = await followThisUser(userId, id);
         return res.status(200).json({
             status: "success",
             user: userProfile,
@@ -186,7 +188,7 @@ export const list = async (req: Request, res: Response) => {
         const starIndex = (page - 1) * itemPage;
 
         //realziar la consulta para obtener los usuarios de papagina actual
-        const user = await User.find().sort('_id').skip(starIndex).limit(itemPage);
+        const user = await User.find().select('-password -email -role -__v').sort('_id').skip(starIndex).limit(itemPage);
         /*
         skip(startIndex) se asegura de que se omitan los primeros 5 documentos 
         (en el caso de que startIndex sea 5) antes de comenzar a recuperar los siguientes 5 documentos 
@@ -260,6 +262,9 @@ export const update = async (req: Request, res: Response) => {
             let pwd = await bcrypt.hash(userToUpdate.password, 10);
             userToUpdate.password = pwd;
 
+        } else {
+            //eliminar el campo contraseña del objeto para que no sobre escribra en el documento de la bd como vacia
+            delete userToUpdate.password;
         }
         //buscar y actualizar
         await User.findByIdAndUpdate(userIdentiti.id, userToUpdate, { new: true }).then(async (userUpdate) => {
@@ -370,4 +375,35 @@ export const avatar = (req: Request, res: Response) => {
 
 
 
+}
+
+//metodo para contar numero de seguidores
+export const counters = async (req: Request, res: Response) => {
+
+    let userId = (req.user as any).id;
+
+    if (req.params.id) {
+        userId = req.params.id;
+    }
+
+    try {
+        const following = await follow.countDocuments({ "user": userId });
+
+        const followed = await follow.countDocuments({ "followed": userId });
+
+        const publications = await publication.countDocuments({ "user": userId });
+
+        return res.status(200).send({
+            userId,
+            following: following,
+            followed: followed,
+            publications: publications
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: "error",
+            message: "Error en los contadores",
+            error
+        });
+    }
 }

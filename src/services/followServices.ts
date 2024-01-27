@@ -23,8 +23,7 @@ export const followsUsersId = async (identytUserId: any) => {
         followers.forEach(follow => {
             followersClean.push(follow.user)
         });
-        console.log('Following Clean:', followingClean);
-        console.log('Followers Clean:', followersClean);
+        
 
         return { following: followingClean, followers: followersClean };
 

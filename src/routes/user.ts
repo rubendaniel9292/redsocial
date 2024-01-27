@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { register, pruebaUser, login, profile, list, update, upLoap, avatar } from '../controllers/user';
+import { register, pruebaUser, login, profile, list, update, upLoap, avatar, counters } from '../controllers/user';
 import { auth } from '../middlewares/auth';
 import multer from 'multer';
 
@@ -41,5 +41,6 @@ routerUser.put('/update', auth, update);
 const upload = multer({ storage: storage });
 routerUser.post('/upload', [auth, upload.single('file')], upLoap);
 
-routerUser.get('/avatar/:file', auth, avatar);
+routerUser.get('/avatar/:file', avatar);
+routerUser.get("/counters/:id", auth, counters);
 export default routerUser;

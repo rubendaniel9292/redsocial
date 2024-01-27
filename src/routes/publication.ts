@@ -1,8 +1,9 @@
+//import { feedPublication } from './../controllers/publication';
 import express  from 'express';
 import { auth } from '../middlewares/auth';
 import multer from 'multer';
 
-import { save, pruebaPublicaion, remuvePublication, userPublication, detail, upLoap, mediaPost, feedPost } from '../controllers/publication';
+import { save, pruebaPublicaion, remuvePublication, userPublication, detail, upLoap, mediaPost, feedPublication } from '../controllers/publication';
 
 const routerPublication = express.Router();
 
@@ -37,6 +38,6 @@ const storage = multer.diskStorage({
 //midelwere que se aplicara a la ruta y se ejecuta antes de la accion del controlador
 const upload = multer({ storage: storage });
 routerPublication.post('/upload/:id', [auth, upload.single('file')], upLoap);
-routerPublication.get('/media/:file', mediaPost, auth);
-routerPublication.get('/feed', feedPost, auth);
+routerPublication.get('/media/:file', mediaPost);
+routerPublication.get('/feedpost/:page?', auth, feedPublication);
 export default routerPublication;

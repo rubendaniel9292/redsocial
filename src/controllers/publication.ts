@@ -1,9 +1,10 @@
-
 import { followsUsersId } from '../services/followServices';
 import { Request, Response } from 'express';
 import publication from '../models/publication';
 import fs from 'fs';
 import path from 'path';
+
+import mongoose from 'mongoose';
 
 
 //metodos de pruebas
@@ -70,6 +71,7 @@ export const detail = async (req: Request, res: Response) => {
     }
 }
 
+//3: todas las publicaciones
 export const remuvePublication = async (req: Request, res: Response) => {
     try {
         //sacar el id de la publicacion a borrar solo la publicacon que  haya hecho un usuario
@@ -89,7 +91,6 @@ export const remuvePublication = async (req: Request, res: Response) => {
     }
 }
 
-//3: todas las publicaciones
 
 //4: listar las publicaciones de un usuario en concreto, de su perfil
 export const userPublication = async (req: Request, res: Response) => {
@@ -106,7 +107,7 @@ export const userPublication = async (req: Request, res: Response) => {
 
         //find, populate, ordenar de mas reciente a mas vieja, paginar
         const publications = await publication.find({ 'user': userId }).sort('-created_at')
-            .populate('user', '-password -__v -role')//saber a que usario creo esa publicacion, y quitar info innecesario de ese usuario
+            .populate('user', '-password -__v -role -email')//saber a que usuario creo esa publicacion, y quitar info innecesario de ese usuario
             .skip(starIndex).limit(itemPage);
 
 
@@ -127,7 +128,7 @@ export const userPublication = async (req: Request, res: Response) => {
     }
 }
 
-//6: subir archivos
+//5: subir archivos
 export const upLoap = async (req: Request, res: Response) => {
     try {
         //sacar el publication id
@@ -197,7 +198,7 @@ export const upLoap = async (req: Request, res: Response) => {
 
     }
 }
-//7:  devolver archivos multimedia
+//6:  devolver archivos multimedia
 export const mediaPost = (req: Request, res: Response) => {
     //sacar el parametro de a url
     const file = req.params.file;
@@ -221,127 +222,84 @@ export const mediaPost = (req: Request, res: Response) => {
 
 
 }
-//8: listar publicacioens del feed (usuarios que estoy siguiende)
-//FEED POST 1
-/*
-export const feedPost = async (req: Request, res: Response) => {
-    //debo colocar el try aqui proque sino no hay nuinguna respuesta del postman 
+//7: listar publicacioens del feed (usuarios que estoy siguiende)
+
+
+export const feedPublication = async (req: Request, res: Response) => {
+
     try {
-        console.log('req.user:', req.user);
 
-        //const userId = (req.user as any).id;//de esta manera salta directamente al bloque catch
-        let userId = req.user; //al hacer de esta manera si entra al bloque try pero se cumple la siguiente condicion y arroja undefined
-        //Obtener userId de req.user de manera segura
-        //let userId = (req.user && (req.user) as any).id ? (req.user!): null;//tampoco funciona
+        let userId = (req.user as any).id;
 
-        console.log('UserId de usuario identificado:', userId);//me arroja undifined
-        if (!userId) {
+        if (userId) {
+
+            //comprobar si me llega la pagina
+            let page = 1;
+            if (req.params.page) page = parseInt(req.params.page);
+            //definir usuario por pagina
+            const itemPerPage = 5;
+            //Puede ser más adecuado para situaciones donde la paginación es simple y directa
+            const total = await publication.countDocuments();
+            //calcular el indice de inicio de la paginacion
+            let itemPage = 5;
+            const starIndex = (page - 1) * itemPage;
+
+            /* UNA MANERA DE OBETER EL LISTADO DE USUARIOS QUE SIGO Y SUS PUBLICACIONES
+            const followsResult: false | { following: (mongoose.Types.ObjectId | null | undefined)[]; followers: (mongoose.Types.ObjectId | null | undefined)[]; } = await followsUsersId(userId);
+ 
+             if (!followsResult || !followsResult.following) {
+                 return res.status(403).send({
+                     status: "error",
+                     message: 'No se pudo obtener el userId del usuario autenticado',
+                 });
+             }
+             // Filtrar null y undefined de la matriz
+             const myFollowing = followsResult.following.filter(f => f) as mongoose.Types.ObjectId[];
+            */
+            /*OTRA MANERA:  verifica tanto si followsResult es falsy (como null o undefined) 
+            como si followsResult.following es falsy antes de intentar acceder a followsResult.following. 
+            Si followsResult es false, no se intentará acceder a followsResult.following y evitará el error que estás enfrentando. */
+            const followsResult = await followsUsersId(userId);
+
+            if (!followsResult || !followsResult.following) {
+                return res.status(403).send({
+                    status: "error",
+                    message: 'No se pudo obtener el userId del usuario autenticado',
+                });
+            }
+            const myFollowing = followsResult.following.filter(Boolean) as mongoose.Types.ObjectId[];
+
+            const publications = await publication.find({
+                //user: { $in: myFollowing }
+                user: myFollowing
+            }).populate('user', '-password -role -__v -email')
+                .sort('-created_ad')
+                .skip(starIndex).limit(itemPage);
+            if (!publications) return res.status(500).send({
+                status: "error",
+                message: 'No hay publicaciones para mostrar'
+            });
+            console.log('Publications:', publications);
+            return res.status(200).send({
+                status: "success",
+                message: 'Feed de publicaciones',
+                userId: myFollowing,
+                publications,
+                total,
+                pages: Math.ceil(total / itemPerPage),
+            });
+        } else {
             return res.status(403).send({
                 status: "error",
                 message: 'No se pudo obtener el userId del usuario autenticado',
             });
         }
-
-
-        //console.log('UserId:', userId);
-
-
-        const myFollows = await followsUsersId(userId);
-        // Verificar si myFollows es false o si following no es un array
-        if (myFollows === false || !Array.isArray(myFollows.following)) {
-            return res.status(404).send({
-                status: "false o no array",
-                message: 'No se encontraron usuarios a seguir o el array de following está vacío o no es válido',
-            });
-        }
-
-        // Verificar si 'following' está vacío
-        if (myFollows.following.length === 0) {
-            return res.status(404).send({
-                status: "vacio",
-                message: 'El array de following está vacío',
-            });
-        }
-        console.log('mis follows', myFollows);
-
-        // Acceder directamente a 'followingClean'
-        return res.status(200).send({
-            status: "success",
-            message: 'Feed de publicaciones',
-            following: myFollows,
-            followings: myFollows.following
-
-        });
-        //find de publicaciones usando oeprador in, ordenar popular y paginar
-
     } catch (error) {
-        console.error('Error en feedPost:', error);
+
         return res.status(500).send({
             status: "error",
             message: 'ocurrio un error durante la carga del feed',
         });
     }
-}
- */
 
-//FEED POST 2, tampoco funciona
-export const feedPost = async (req: Request, res: Response) => {
-    try {
-        console.log('req.user:', req.user);
-
-        // Opción 1
-        const userIdOption1 = (req.user as { id?: string })?.id;
-        const myFollows = await followsUsersId(userIdOption1);
-        if (userIdOption1) {
-            console.log('UserId de usuario identificado (Opción 1):', userIdOption1);
-            // Continuar con la lógica del método
-            // ...
-            return res.status(200).send({
-                status: "success",
-                message: 'Feed de publicaciones',
-                userId: myFollows
-            });
-        }
-
-        // Opción 2
-        const userIdOption2 = (req.user as any)?.id;
-        if (userIdOption2) {
-            console.log('UserId de usuario identificado (Opción 2):', userIdOption2);
-            // Continuar con la lógica del método
-            const myFollows = await followsUsersId(userIdOption2);
-            return res.status(200).send({
-                status: "success",
-                message: 'Feed de publicaciones',
-                userId: myFollows,
-            });
-        }
-
-        // Opción 3
-        const userWithId = req.user as { id?: string };
-        const userIdOption3 = userWithId && userWithId.id;
-        if (userIdOption3) {
-            console.log('UserId de usuario identificado (Opción 3):', userIdOption3);
-            // Continuar con la lógica del método
-            const myFollows = await followsUsersId(userIdOption3);
-            return res.status(200).send({
-                status: "success",
-                message: 'Feed de publicaciones',
-                userId: myFollows,
-            });
-        }
-
-        // Ninguna opción funcionó
-        console.error('No se pudo obtener el userId del usuario autenticado');
-        return res.status(403).send({
-            status: "error",
-            message: 'No se pudo obtener el userId del usuario autenticado con feedPost 2',
-        });
-
-    } catch (error) {
-        console.error('Error en feedPost:', error);
-        return res.status(500).send({
-            status: "error",
-            message: 'Ocurrió un error durante la carga del feed en feedPost 2',
-        });
-    }
 }

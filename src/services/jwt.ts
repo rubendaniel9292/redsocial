@@ -19,6 +19,7 @@ export const createToken = (user: any) => {
         ite: moment().unix(),//hace referencia al momento que se crea este objeto
         exp: moment().add(30, 'days').unix()//hace referencia al tiempo de expiracion
     }
+    //console.log('Decoded Token:', decoded);
     //devolver el token jwt codificado
     return jwt.encode(payLoad, secret);
 
