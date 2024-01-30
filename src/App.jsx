@@ -1,18 +1,16 @@
-import Header from './components/layout/public/Header'
-function App() {
 
+import Routing from './router/Routing'
+function App() {
 
   return (
     <>
       <div className="layout">
-        
-        <Header></Header>
-        <section className="layout__content">
+        {/* cargando configuracion de rutas*/}
 
-        </section>
+        <Routing></Routing>
+
 
       </div>
-
 
     </>
   )

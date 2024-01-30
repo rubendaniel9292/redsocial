@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { NavLink } from 'react-router-dom';
 
 const Nav = () => {
     return (
@@ -8,17 +9,18 @@ const Nav = () => {
 
             <ul className="container-lists__menu-list">
                 <li className="menu-list__item">
-                    <a href="#" className="menu-list__link">
+                  
+                    <NavLink to='/login' href="#" className="menu-list__link">
                         <i><FontAwesomeIcon icon={faUser} /></i>
                         <span className="menu-list__title">Login</span>
-                    </a>
+                    </NavLink>
                 </li>
 
                 <li className="menu-list__item">
-                    <a href="#" className="menu-list__link">
+                    <NavLink to='/registro' href="#" className="menu-list__link">
                         <i > <FontAwesomeIcon icon={faUsers} /></i>
                         <span className="menu-list__title">Registro</span>
-                    </a>
+                    </NavLink>
                 </li>
 
 
