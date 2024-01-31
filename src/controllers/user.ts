@@ -73,6 +73,12 @@ export const register = async (req: Request, res: Response) => {
 
             //crear objeto de usuario
             let userToSave = new User(params);
+            // Ocultar el campo password en la representación JSON
+            userToSave.toJSON = function () {
+                const userObject = this.toObject();
+                delete userObject.password; // Elimina el campo password del objeto JSON
+                return userObject;
+            };
             //guardar en la bd directamente
             await userToSave.save();
             return res.status(200).json({
