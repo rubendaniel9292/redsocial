@@ -2,6 +2,7 @@ import Header from "./Header"
 import { Outlet } from "react-router-dom"
 import Sidebar from "./Sidebar"
 const PrivateLoyout = () => {
+    console.log('PrivateLayout renderizado...');
     return (
         <>
             <Header></Header>
