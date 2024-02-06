@@ -7,10 +7,11 @@ datos entre componentes sin tener que pasar props manualmente
 */
 const AuthContext = createContext();
 
+
 const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({});
-    console.log('Inicial de auth state:', auth);
-    //cada vez que se use este componente o se carge la pantalla, se comprueba el token mediante useEfec
+    const [counters, setCounters] = useState({});
+    //cada vez que se use este componente o se carge la pantalla, se comprueba el token mediante useEffect
     useEffect(() => {
         //se ejecuta cada vez que se ejecuta este contexto
         authUser();
@@ -39,6 +40,7 @@ const AuthProvider = ({ children }) => {
                     'Authorization': token
                 }
             });
+           
             //validaciones
             if (!request.ok) {
                 //verificar si el token ha caducado y manejarlo adecuadamente
@@ -52,10 +54,23 @@ const AuthProvider = ({ children }) => {
                 }
             }
 
+            //peticion para los contadores
+           
+
             //setear el estado de auth
             const data = await request.json();
-            console.log('Data from authUser:', data);
+            const requestCounters = await fetch(Global.url + 'user/counters/' + userId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                }
+            });
+            const dataCounters = await requestCounters.json();
+            
             setAuth(data.user);//si se muestran los datos
+            setCounters(dataCounters)
+           
 
         }
         catch (error) {
@@ -64,17 +79,18 @@ const AuthProvider = ({ children }) => {
 
     }
     return (
-        //
         /*envuelves tus componentes con un proveedor de contexto 
         para obetner acceso a estos dos metodos en cualquier componente
         */
-        <AuthContext.Provider value={{ auth, setAuth }}>
+        <AuthContext.Provider value={{ auth, setAuth, counters}}>
             {children}
         </AuthContext.Provider>
     )
 }
 // Validación de Propiedades, se suguiere como buena practica
+
 AuthProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
-export default AuthProvider;
+//export default AuthContext;
+export {AuthContext, AuthProvider} ;

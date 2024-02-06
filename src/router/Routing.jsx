@@ -5,7 +5,7 @@ import Login from '../components/user/Login';
 import Register from '../components/user/Register';
 import PrivateLoyout from '../components/layout/private/PrivateLoyout';
 import Feed from '../components/publication/Feed';
-import AuthProvider from '../context/AuthProvider';
+import {AuthProvider}  from '../context/AuthProvider';
 const Routing = () => {
     return (
         // Uso de Contexto en la aplicación

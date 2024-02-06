@@ -1,18 +1,16 @@
+
 import avatar from '../../../assets/img/user.png'
 import { Global } from '../../../helpers/Global';
-import useAuth from '../../../hooks/useAuth'
+import useAuth from '../../../hooks/useAuth';
 const Sidebar = () => {
     /*acceder al valor del contexto: no accede y no se carga el componente */
-    const { auth } = useAuth();
+    const { auth, counters } = useAuth();
     // Verificar si auth es undefined antes de acceder a sus propiedades
     if (!auth) {
         // Manejar el caso donde auth es undefined, por ejemplo, mostrando un mensaje de error o tomando una acción predeterminada.
         console.error('auth no esta definido!!!...');
         return null; // O realiza alguna acción adecuada para tu aplicación
     }
-    console.log('auth:', auth);
-    console.log('sidebar cargado correctamente');
-    const userName = auth.name;
 
     return (
         <>
@@ -20,19 +18,27 @@ const Sidebar = () => {
             <aside className="layout__aside">
 
                 <header className="aside__header">
-                    <h1 className="aside__title">Hola {userName}</h1>
+                    <h1 className="aside__title">Hola {auth.name}</h1>
                 </header>
                 <div className="aside__container">
                     <div className="aside__profile-info">
                         <div className="profile-info__general-info">
                             <div className="general-info__container-avatar">
-                                {auth.image !== 'default.png' &&
+                                {/* 
+                                   {auth.image !== 'default.png' &&
                                     <img src={Global.url + 'user/avatar/' + auth.image} className="container-avatar__img" alt="Foto de perfil" />
                                 }
 
                                 {auth.image === 'default.png' &&
                                     <img src={avatar} className="container-avatar__img" alt="Foto de perfil" />
-                                }
+                                }*/}
+
+                                <img
+                                    src={auth.image !== 'default.png' ? Global.url + 'user/avatar/' + auth.image : avatar}
+                                    className="container-avatar__img"
+                                    alt="Foto de perfil"
+                                />
+
                             </div>
 
                             <div className="general-info__container-names">
@@ -46,13 +52,13 @@ const Sidebar = () => {
                             <div className="stats__following">
                                 <a href="#" className="following__link">
                                     <span className="following__title">Siguiendo</span>
-                                    <span className="following__number">10</span>
+                                    <span className="following__number">{counters.following}</span>
                                 </a>
                             </div>
                             <div className="stats__following">
                                 <a href="#" className="following__link">
                                     <span className="following__title">Seguidores</span>
-                                    <span className="following__number">13</span>
+                                    <span className="following__number">{counters.followed}</span>
                                 </a>
                             </div>
 
@@ -60,7 +66,7 @@ const Sidebar = () => {
                             <div className="stats__following">
                                 <a href="#" className="following__link">
                                     <span className="following__title">Publicaciones</span>
-                                    <span className="following__number">17</span>
+                                    <span className="following__number">{counters.publications}</span>
                                 </a>
                             </div>
 
