@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList, faHouse, faUser, faEnvelope, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import avatar from '../../../assets/img/user.png'
+import { NavLink } from 'react-router-dom';
 const Nav = () => {
     return (
 
@@ -56,10 +57,10 @@ const Nav = () => {
                     </a>
                 </li>
                 <li className="list-end__item">
-                    <a href="#" className="list-end__link">
+                    <NavLink to='/social/logout' className="list-end__link">
                         <i ><FontAwesomeIcon icon={faPowerOff} /></i>
                         <span className="list-end__name">Cerrar Sesión</span>
-                    </a>
+                    </NavLink>
                 </li>
             </ul>
 

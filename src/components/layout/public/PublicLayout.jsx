@@ -1,15 +1,22 @@
-import { Outlet } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 import Header from "./Header"
+import useAuth from "../../../hooks/useAuth"
 
 
 const PublicLayout = () => {
+    const {auth} = useAuth();
     return (
         <>
             {/*HEADER*/}
             <Header></Header>
             {/*CONTENIDO PRINICIPAL*/}
             <section className="layout__content">
-                <Outlet></Outlet>
+                {
+                //validar si no existe el usuario identifado mostrar la parte publica, login y registro
+                !auth._id ? 
+                <Outlet></Outlet>:<Navigate to='/social'></Navigate>
+                }
+                
 
             </section>
 
@@ -18,4 +25,4 @@ const PublicLayout = () => {
     )
 }
 
-export default PublicLayout
+export default PublicLayout;

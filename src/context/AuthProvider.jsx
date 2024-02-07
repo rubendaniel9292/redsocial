@@ -9,8 +9,14 @@ const AuthContext = createContext();
 
 
 const AuthProvider = ({ children }) => {
+    //estado de autenticacion
     const [auth, setAuth] = useState({});
+    //estado de contadores
     const [counters, setCounters] = useState({});
+    //estado de loafing o cargando
+    const [loading, setLoading] = useState(true);
+
+
     //cada vez que se use este componente o se carge la pantalla, se comprueba el token mediante useEffect
     useEffect(() => {
         //se ejecuta cada vez que se ejecuta este contexto
@@ -28,7 +34,11 @@ const AuthProvider = ({ children }) => {
             console.log('LocalStorage token:', token);
             console.log('LocalStorage user:', user);
             //comprobar si tengo el token y el user
-            if (!token || !user) return false;
+            if (!token || !user) {
+                setLoading(false);
+                return false;
+               
+            }
             //transofrmar los datos a un objeto de JS.
             const userObj = JSON.parse(user);//acceder al objeto user
             const userId = userObj._id;//obtener el usuario identificado
@@ -47,8 +57,6 @@ const AuthProvider = ({ children }) => {
                 if (request.status === 401) {
                     // Manejar el caso en que el token haya expirado
                     console.warn('Token expirado');
-                    // Realizar acciones como cerrar sesión o redirigir a la página de inicio de sesión para cerra sion
-                    //localStorage.removeItem('token');
                 } else {
                     throw new Error('Error al obtener el perfil del usuario.');
                 }
@@ -69,7 +77,8 @@ const AuthProvider = ({ children }) => {
             const dataCounters = await requestCounters.json();
             
             setAuth(data.user);//si se muestran los datos
-            setCounters(dataCounters)
+            setCounters(dataCounters);
+            setLoading(false);
            
 
         }
@@ -82,7 +91,7 @@ const AuthProvider = ({ children }) => {
         /*envuelves tus componentes con un proveedor de contexto 
         para obetner acceso a estos dos metodos en cualquier componente
         */
-        <AuthContext.Provider value={{ auth, setAuth, counters}}>
+        <AuthContext.Provider value={{ auth, setAuth, counters, loading, setCounters}}>
             {children}
         </AuthContext.Provider>
     )

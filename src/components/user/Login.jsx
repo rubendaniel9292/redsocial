@@ -1,9 +1,11 @@
 import UserFrom from "../../hooks/UserFrom";
 import { useState } from "react";
 import { Global } from "../../helpers/Global";
+import useAuth from "../../hooks/useAuth";
 const Login = () => {
   const { form, changed } = UserFrom({});
-  const [loged, setLoged] = useState('not_loged')
+  const [loged, setLoged] = useState('not_loged');
+  const { setAuth } = useAuth();
   const loginUser = async (e) => {
     //prevenir atualziacion de pantalla
     e.preventDefault();
@@ -22,8 +24,15 @@ const Login = () => {
     if (data.status === 'success') {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.userRecord));
-
       setLoged('login');
+      //redireccion 
+
+      setTimeout(() => {
+        //setear datos en el para que redireciones y no entrar manualamente a /social
+        setAuth(data.userRecord);
+        window.location.reload();//realiza el navigate a public o private layout de manera automatica
+      }, 500);
+
     } else {
       setLoged('error')
     }
