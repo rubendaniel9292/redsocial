@@ -202,11 +202,9 @@ export const list = async (req: Request, res: Response) => {
         ya que puedes controlar qué "página" de resultados estás recuperando.
         */
 
-
         //posteriormente info de seguimiento, usuarios que sigo y los que me siguen
         let identity = (req.user as any).id;
         let followuserid = await followsUsersId(identity);
-
 
         return res.status(200).json({
             status: "success",
@@ -233,60 +231,36 @@ export const list = async (req: Request, res: Response) => {
 
 //metodo para actualziar el usuario
 export const update = async (req: Request, res: Response) => {
-    //recoger info del usuario
-    const userToUpdate = req.body;
-    const userIdentiti = req.user as any;//usando aserscion de tipos
-    //elimimar campos sobrantes
-    delete userToUpdate.iat;
-    delete userToUpdate.exp;
-    delete userToUpdate.role;
-    delete userToUpdate.image;
-    //comprobar si el usuario existe
-    User.find({
-        $or: [
-            { email: userToUpdate.email!.toLocaleLowerCase() },
-            { nick: userToUpdate.nick!.toLocaleLowerCase() }
-        ]
-    }).select({ 'password': 0 }).then(async (users) => {
-        //comprar el email y el nick para poder actualizar el objeto
-        let userIsset = false;
-        //recorrer los usuarios
-        users.forEach(user => {
-            //evalua si el usuario existe y el user usuario.id
-            if (user && user._id !== userIdentiti!.id) userIsset = true;
-        });
-        if (userIsset) {
-            return res.status(200).json({
-                status: 'success', message: 'el usuario ya existe'
-            });
+    try {
+        const userToUpdate = req.body;
+        const userIdentity = req.user as any;
 
-        }
+        delete userToUpdate.iat;
+        delete userToUpdate.exp;
+        delete userToUpdate.role;
+        delete userToUpdate.image;
 
-
-        //cifrar la contraseña de manera mas directa medaite promesas
         if (userToUpdate.password) {
-            let pwd = await bcrypt.hash(userToUpdate.password, 10);
-            userToUpdate.password = pwd;
-
+            //cifrar la contraseña de manera mas directa medaite promesas
+            const hashedPassword = await bcrypt.hash(userToUpdate.password, 10);
+            userToUpdate.password = hashedPassword;
         } else {
-            //eliminar el campo contraseña del objeto para que no sobre escribra en el documento de la bd como vacia
+            /*
+           eliminar de la vista en el formulario o en la respuesta del campo contraseña 
+           del objeto para que no sobre escribra en el documento de la bd como vacia
+           es decir, si no se proporciona una nueva contraseña no se actualiza
+           */
             delete userToUpdate.password;
+            //userToUpdate.password = userIdentity.password;
         }
-        //buscar y actualizar
-        await User.findByIdAndUpdate(userIdentiti.id, userToUpdate, { new: true }).then(async (userUpdate) => {
-            return res.status(200).json({
-                status: 'success', message: 'Usuario actualziado correctamente', userUpdate
-            });
 
-        }).catch((error) => {
-            return res.status(500).json({
-                status: 'error',
-                message: 'error al actualizar usuarios',
-                error
-            });;
+        let userUpdated = await User.findByIdAndUpdate(userIdentity.id, userToUpdate, { new: true });
 
-        });
-    });
+        return res.status(200).json({ status: 'success', message: 'Usuario actualizado correctamente', user: userUpdated });
+    } catch (error) {
+        return res.status(500).json({ status: 'error', message: 'Error al actualizar usuarios', error });
+    }
+
 }
 
 //metodo para subir imagenes
