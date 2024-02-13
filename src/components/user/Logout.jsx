@@ -10,7 +10,6 @@ const Logout = () => {
         setTimeout(() => {
             //vaciar el local storage
             localStorage.clear();
-
             //setear estados globales a vacioos
             setAuth({});
             setCounters({})

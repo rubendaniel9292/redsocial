@@ -7,6 +7,8 @@ import PrivateLoyout from '../components/layout/private/PrivateLoyout';
 import Feed from '../components/publication/Feed';
 import {AuthProvider}  from '../context/AuthProvider';
 import Logout from '../components/user/Logout';
+import People from '../components/user/People';
+import Config from '../components/layout/private/Config';
 const Routing = () => {
     return (
         // Uso de Contexto en la aplicación
@@ -18,11 +20,13 @@ const Routing = () => {
                         <Route path='login' element={<Login></Login>}></Route>
                         <Route path='registro' element={<Register></Register>}></Route>
                     </Route>
-                    {/* todas las rutas que empiecen con SOCIAL*/}
+                    {/* todas las rutas privadas que empiecen con SOCIAL*/}
                     <Route path='/social' element={<PrivateLoyout></PrivateLoyout>}>
                         <Route index element={<Feed></Feed>}></Route>
                         <Route path='feed' element={<Feed></Feed>}></Route>
                         <Route path='logout' element={<Logout></Logout>}></Route>
+                        <Route path='people' element={<People></People>}></Route>
+                        <Route path='config' element={<Config></Config>}></Route>
                     </Route>
 
                     <Route path='*'

@@ -1,32 +1,35 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList, faHouse, faUser, faEnvelope, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
-import avatar from '../../../assets/img/user.png'
+import avatar from '../../../assets/img/user.jpg'
 import { NavLink } from 'react-router-dom';
+import { Global } from '../../../helpers/Global';
+import useAuth from '../../../hooks/useAuth';
 const Nav = () => {
+    const { auth } = useAuth();
     return (
 
         <nav className="navbar__container-lists">
 
             <ul className="container-lists__menu-list">
                 <li className="menu-list__item">
-                    <a href="#" className="menu-list__link">
+                    <NavLink to='/social' className="menu-list__link">
                         <i><FontAwesomeIcon icon={faHouse} /></i>
                         <span className="menu-list__title">Inicio</span>
-                    </a>
+                    </NavLink>
                 </li>
 
                 <li className="menu-list__item">
-                    <a href="#" className="menu-list__link">
+                    <NavLink to='/social' className="menu-list__link">
                         <i > <FontAwesomeIcon icon={faList} /></i>
                         <span className="menu-list__title">Timeline</span>
-                    </a>
+                    </NavLink>
                 </li>
 
                 <li className="menu-list__item">
-                    <a href="#" className="menu-list__link">
+                    <NavLink to='/social/people' className="menu-list__link">
                         <i ><FontAwesomeIcon icon={faUser} /></i>
                         <span className="menu-list__title">Gente</span>
-                    </a>
+                    </NavLink>
                 </li>
 
                 <li className="menu-list__item">
@@ -40,21 +43,27 @@ const Nav = () => {
             <ul className="container-lists__list-end">
                 <li className="list-end__item">
                     <a href="#" className="list-end__link-image">
-                        <img src={avatar} className="list-end__img" alt="Imagen de perfil" />
+
+
+                        <img
+                            src={auth.image !== 'default.png' ? Global.url + 'user/avatar/' + auth.image : avatar}
+                            className="list-end__img"
+                            alt="Foto de perfil"
+                        />
                     </a>
                 </li>
                 <li className="list-end__item">
                     <a href="#" className="list-end__link">
-                        <span className="list-end__name">Nickname</span>
+                        <span className="list-end__name">{auth.nick}</span>
                         <i className="fa-solid fa-caret-down"></i>
                     </a>
                 </li>
                 <li className="list-end__item">
-                    <a href="#" className="list-end__link">
+                    <NavLink to='/social/config' className="list-end__link">
 
                         <i ><FontAwesomeIcon icon={faGear} /></i>
                         <span className="list-end__name">Ajustes</span>
-                    </a>
+                    </NavLink>
                 </li>
                 <li className="list-end__item">
                     <NavLink to='/social/logout' className="list-end__link">

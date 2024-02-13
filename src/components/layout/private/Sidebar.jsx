@@ -1,5 +1,5 @@
 
-import avatar from '../../../assets/img/user.png'
+import avatar from '../../../assets/img/user.jpg'
 import { Global } from '../../../helpers/Global';
 import useAuth from '../../../hooks/useAuth';
 const Sidebar = () => {
@@ -18,27 +18,17 @@ const Sidebar = () => {
             <aside className="layout__aside">
 
                 <header className="aside__header">
-                    <h1 className="aside__title">Hola {auth.name}</h1>
+                    <h1 className="aside__title">Hola {auth.nick}</h1>
                 </header>
                 <div className="aside__container">
                     <div className="aside__profile-info">
                         <div className="profile-info__general-info">
-                            <div className="general-info__container-avatar">
-                                {/* 
-                                   {auth.image !== 'default.png' &&
-                                    <img src={Global.url + 'user/avatar/' + auth.image} className="container-avatar__img" alt="Foto de perfil" />
-                                }
-
-                                {auth.image === 'default.png' &&
-                                    <img src={avatar} className="container-avatar__img" alt="Foto de perfil" />
-                                }*/}
-
+                            <div className="general-info__container-avatar">                      
                                 <img
                                     src={auth.image !== 'default.png' ? Global.url + 'user/avatar/' + auth.image : avatar}
                                     className="container-avatar__img"
                                     alt="Foto de perfil"
                                 />
-
                             </div>
 
                             <div className="general-info__container-names">

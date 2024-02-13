@@ -1,5 +1,5 @@
 
-import avatar from '../../assets/img/user.png'
+import avatar from '../../assets/img/user.jpg'
 //import useAuth from '../../hooks/useAuth'
 const Feed = () => {
  

@@ -30,9 +30,7 @@ const AuthProvider = ({ children }) => {
             //sacar datos de usuario identificado de local storage
             const token = localStorage.getItem('token');
             const user = localStorage.getItem('user');
-            //si se muestran los consoles
-            console.log('LocalStorage token:', token);
-            console.log('LocalStorage user:', user);
+           
             //comprobar si tengo el token y el user
             if (!token || !user) {
                 setLoading(false);
