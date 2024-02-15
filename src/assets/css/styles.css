@@ -323,6 +323,7 @@ body {
 
 .container-avatar__img{
     height: 100%;
+    width: 100%;
 }
 
 .container-names__name{
@@ -453,3 +454,7 @@ button{
     font-size: 1.4rem;
 }
 
+.post__button--green{
+    background-color: var(--color-background-btn-success);
+    border-color: var(--color-background-btn-success-hover);
+}

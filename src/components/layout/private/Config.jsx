@@ -6,45 +6,71 @@ import { SerializeFrom } from "../../../helpers/SerializeFrom";
 
 const Config = () => {
   const [saved, setSaved] = useState('');
-  
+
   const { auth, setAuth } = useAuth();
-  
-  
+
   const updateUser = async (e) => {
     e.preventDefault();
     //recoger datos del formulario
+    const token = localStorage.getItem('token')
     let newDatauser = SerializeFrom(e.target);
     //borrar propiedad innecesara
     delete newDatauser.file;
-    setSaved('loading'); 
+    setSaved('loading');
     //guardar y actualizar datos del en el la bd
     const request = await fetch(Global.url + 'user/update', {
       method: 'PUT',
       body: JSON.stringify(newDatauser),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token')
+        'Authorization': token
       }
     });
+
     //esperar el resultado y hacer peticion para convertir cualquier respuesta en un objeto de JS usable
     const data = await request.json();
-    console.log(data);
+    //console.log(data);
 
-    if (data.status == 'success' && data.user) {
-      console.log('console en el if');
+    if (data.status === 'success' && data.user) {
       //no obtener la contraseña nunca
       delete data.user.password;
       setAuth(data.user);//actualiza el estado que guarda la informacion
-      console.log('datos despues del IF:', data);
-      console.log('datos despues del auth IF:', auth);
       setSaved('saved');
     } else {
-      console.log('no se cumple la condicion del if');
       setSaved('error');
-      console.log(data.status === 'success');
-      console.log(!!data.user);//doble negacion para convertir un valor a su equivalente booleano
+      //console.log(!!data.user);//doble negacion para convertir un valor a su equivalente booleano
     }
+
+    //subida de imagenes
+    const fileInput = document.querySelector('#file');
+    if (data.status === 'success' && fileInput.files[0]) {
+      const formData = new FormData();//crea un formulario virtual
+      //recoger imagen a subir
+      formData.append('file', fileInput.files[0]);
+      //peticion para enviar la imagen al backend
+      const upLoadRequest = await fetch(Global.url + 'user/upload', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      const upLoadData = await upLoadRequest.json();
+      
+      if (upLoadData.status === 'success' && upLoadData.user) {
+        delete upLoadData.user.password;
+        setAuth(upLoadData.user);
+        setSaved('saved');
+      } else {
+        setSaved('error');
+      }
+    }
+
   }
+
+
+
   return (
     <>
       <header className="content__header">
@@ -59,8 +85,6 @@ const Config = () => {
           <strong className="alert alert-danger">El usuario no se ha actualizado !!</strong>
           : ''
         }
-
-        {console.log('resultado del saved: ', saved)}
         <br></br>
         <form id="myForm" className="config-from" onSubmit={updateUser}>
           <div className="form-group">
