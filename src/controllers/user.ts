@@ -214,7 +214,9 @@ export const list = async (req: Request, res: Response) => {
             itemPage,
             total,
             pages: Math.ceil(total / itemPage),
-            followInfo: followuserid
+            followInfo: followuserid,
+            user_following: followuserid ? followuserid.following : [],
+            user_followme: followuserid ? followuserid.followers : []
 
         })
 

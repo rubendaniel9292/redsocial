@@ -1,8 +1,6 @@
 import { followsUsersId, followThisUser } from '../services/followServices';
 import { Request, Response } from 'express';
 import follow from '../models/follow';
-import mongoose from 'mongoose';
-
 
 
 //metodos de pruebas
@@ -45,7 +43,7 @@ export const save = async (req: Request, res: Response) => {
         });
         const followStored = await userToFollow.save();
         return res.status(200).send({
-            status: 'succes',
+            status: 'success',
             message: 'Metodo dar follow: usuario seguido exitosamente',
             identity: req.user,
             follow: followStored
@@ -95,7 +93,7 @@ export const unFollow = async (req: Request, res: Response) => {
     ;
 }
 //accion listado de usuarios que cualquier usuario esta siguiendo
-export const following = async (req: Request, res: Response) => {
+export const folloWing = async (req: Request, res: Response) => {
     try {
         //sacar el id del usuaio dentificado
         let identity = (req.user as any).id;
@@ -103,7 +101,7 @@ export const following = async (req: Request, res: Response) => {
         if (req.params.id) identity = req.params.id;
         //comprobar si me llega la pagina
         let page = 1;
-        if (req.params.page) page = parseInt(req.params.page);
+        if (req.params.page) page = parseInt(identity);
         //definir usuario por pagina
         const itemPerPage = 5;
         //Puede ser más adecuado para situaciones donde la paginación es simple y directa
@@ -122,7 +120,9 @@ export const following = async (req: Request, res: Response) => {
             result,
             total,
             pages: Math.ceil(total / itemPerPage),
-            user_follow_info: followuserid
+            user_following: followuserid ? followuserid.following : [],
+            user_followme: followuserid ? followuserid.followers : []
+            
         });
 
 
@@ -136,7 +136,7 @@ export const following = async (req: Request, res: Response) => {
 }
 //listaod de usuarios que siguen a cualquier otro usuario (soy seguido mis seguidores)
 
-export const followers = async (req: Request, res: Response) => {
+export const folloWers = async (req: Request, res: Response) => {
     try {
         //sacar el id del usuaio dentificado
         let identity = (req.user as any).id;
@@ -165,7 +165,8 @@ export const followers = async (req: Request, res: Response) => {
             result,
             total,
             pages: Math.ceil(total / itemPerPage),
-            user_follow_info: followuserid
+            user_following: followuserid ? followuserid.following : [],
+            user_followme: followuserid ? followuserid.followers : []
         });
 
     } catch (error) {

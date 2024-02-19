@@ -1,6 +1,6 @@
 import express  from 'express';
 import { auth } from '../middlewares/auth';
-import {followers, following, pruebaFollow,  save, unFollow } from '../controllers/follow';
+import {folloWers, folloWing, pruebaFollow,  save, unFollow } from '../controllers/follow';
 
 const routerFollow = express.Router();
 
@@ -9,7 +9,7 @@ routerFollow.get('/prueba-follow', pruebaFollow);
 routerFollow.post('/save', auth, save);
 routerFollow.delete('/unfollow/:id', auth, unFollow);
 
-routerFollow.get('/following/:id?/:page?',auth, following);
-routerFollow.get('/followers/:id?/:page?',auth, followers);
+routerFollow.get('/following/:id?/:page?',auth, folloWing);
+routerFollow.get('/followers/:id?/:page?',auth, folloWers);
 
 export default routerFollow;

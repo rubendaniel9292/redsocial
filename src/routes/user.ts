@@ -33,7 +33,7 @@ routerUser.post('/registro', register);
 routerUser.post('/login', login);
 //rutas que requieren autenticacion
 routerUser.get('/porfile/:id', auth, profile);
-routerUser.get('/list/:page?', list);
+routerUser.get('/list/:page?',auth, list);
 
 routerUser.put('/update', auth, update);
 
