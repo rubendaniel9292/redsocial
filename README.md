@@ -22,6 +22,10 @@ npm i --save @fortawesome/free-brands-svg-icons
 
 npm i --save @fortawesome/react-fontawesome@latest
 
+Detalles adicionales:
+
+Alertas y a loadings personalizados
+
 
 
 

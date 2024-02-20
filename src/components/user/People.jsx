@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import avatar from '../../assets/img/user.jpg'
 import { Global } from "../../helpers/Global";
+import useAuth from '../../hooks/useAuth';
 
 const People = () => {
+    const { auth } = useAuth()
     const [users, setUser] = useState([]);
     const [page, setPage] = useState(1);
     const [more, setMore] = useState(true);
+    const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -37,15 +40,14 @@ const People = () => {
             De lo contrario, cuando nextPage no es igual a 1 (cualquier página que no sea la primera), 
             se concatenarán los nuevos usuarios (data.user) a la lista existente de usuarios (users). 
             Esto asegura que no se dupliquen los usuarios y que se maneje correctamente la paginación.
-             */
-
-
-            /*
+        
             if (users.length >= 1) {
                 newUser = [...users, ...data.user]//asignar todos los usuarios del estado mas los siguientes que voy a sacar
 
             }*/
             setUser(newUser);
+            setFollowing(data.user_following);
+            //console.log('listado de seguimiento: ', following);//es decir si lo estoy siguiendo
             setLoading(false);
         }
         //paginacion
@@ -58,15 +60,49 @@ const People = () => {
         let next = page + 1;
         setPage(next);
         getUsers(next);//para evitar el retraso de 1
+        //console.log('listado de seguimiento 2: ', following);//es decir si lo estoy siguiendo
+
+    }
+    const follow = async (userId) => {
+        //peticion al backend
+        const request = await fetch(Global.url + 'follow/save', {
+            method: 'POST',
+            body: JSON.stringify({ followed: userId }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+        const data = await request.json();
+        //cuando sea exitosa, actualziar el estado de following agregando el nuevo follow
+        if (data.status === 'success') {
+            setFollowing([...following, userId]);
+        }
+
+    }
+    const unFollow = async (userId) => {
+        //peticion al backend
+        const request = await fetch(Global.url + 'follow/unfollow/' + userId, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+        const data = await request.json();
+
+        //cuando sea exitosa, actualziar el estado de following filtando los datos para elimianr el antiguo user id que acabi de dejar de segrui
+        if (data.status === 'success') {
+            //array nuevo con usuariios que no sean  el que acabo de dejar de seguir
+            let filterFollowing = following.filter(followingUserId => userId !== followingUserId);
+            setFollowing(filterFollowing);
+        }
     }
     return (
-
         <>
             <header className="content__header">
                 <h1 className="content__title">Gente</h1>
-
             </header>
-
             {
                 users.map(user => {
                     return (
@@ -92,23 +128,33 @@ const People = () => {
                                     </div>
                                     <h4 className="post__content">{user.bio}</h4>
                                 </div>
-
                             </div>
+                            {/*mostrar cuando el usuario no sea el identificado*/}
+                            {user._id !== auth._id &&
+                                <div className="post__buttons">
+                                    {
+                                        !following.includes(user._id) &&
+                                        <button className="post__button post__button--green" onClick={() => follow(user._id)}>
+                                            Seguir
+                                            <i className="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    }
 
-                            <div className="post__buttons">
+                                    {following.includes(user._id) &&
+                                        <button className="post__button" onClick={() => unFollow(user._id)}>
+                                            Dejar de Seguir
+                                            <i className="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    }
+                                </div>
+                            }
 
-                                <a href="#" className="post__button post__button--green">
-                                    Seguir
-                                    <i className="fa-solid fa-trash-can"></i>
-                                </a>
 
-
-                            </div>
-                        </article>
+                        </article >
                     )
                 })
             }
-            {loading ? '<strong>Cargando.....</strong>' : ''}
+            {loading ? <strong>Cargando.....</strong> : ''}
             {
                 more &&
                 <div className="content__container-btn">
