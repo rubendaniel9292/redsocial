@@ -99,7 +99,7 @@ const Config = () => {
 
           <div className="form-group">
             <label htmlFor="nick">Nickanme</label>
-            <input type="text" name="nick" defaultValue={auth.nick}></input>
+            <input type="text" name="nick" readOnly defaultValue={auth.nick}></input>
           </div>
           <div className="form-group">
             <label htmlFor="bio">Bio</label>

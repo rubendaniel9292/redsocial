@@ -9,6 +9,8 @@ import {AuthProvider}  from '../context/AuthProvider';
 import Logout from '../components/user/Logout';
 import People from '../components/user/People';
 import Config from '../components/layout/private/Config';
+import Following from '../components/follow/Following';
+import Followers from '../components/follow/Followers';
 const Routing = () => {
     return (
         // Uso de Contexto en la aplicación
@@ -27,6 +29,8 @@ const Routing = () => {
                         <Route path='logout' element={<Logout></Logout>}></Route>
                         <Route path='people' element={<People></People>}></Route>
                         <Route path='config' element={<Config></Config>}></Route>
+                        <Route path='siguiendo/:userId' element={<Following></Following>}></Route>
+                        <Route path='seguidores/:userId' element={<Followers></Followers>}></Route>
                     </Route>
 
                     <Route path='*'
