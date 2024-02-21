@@ -101,27 +101,27 @@ export const folloWing = async (req: Request, res: Response) => {
         if (req.params.id) identity = req.params.id;
         //comprobar si me llega la pagina
         let page = 1;
-        if (req.params.page) page = parseInt(identity);
+        if (req.params.page) page = parseInt(req.params.page);
         //definir usuario por pagina
         const itemPerPage = 5;
         //Puede ser más adecuado para situaciones donde la paginación es simple y directa
         const total = await follow.countDocuments();
         //calcular el indice de inicio de la paginacion
-        let itemPage = 5;
-        const starIndex = (page - 1) * itemPage;
+
+        const starIndex = (page - 1) * itemPerPage;
         let result = await follow.find({ user: identity })
             .populate('user followed', '-password -role -__v -email')
-            .skip(starIndex).limit(itemPage);
+            .skip(starIndex).limit(itemPerPage);
         //listado de usuarios me siguen a mi mediante un array de usuario de los que me siguen y sigo como identificado
         let followuserid = await followsUsersId(identity);
         return res.status(200).json({
             status: "success",
             message: "Listado de usuario que estoy siguiendo",
-            result,
+            follows: result,
             total,
             pages: Math.ceil(total / itemPerPage),
             user_following: followuserid ? followuserid.following : [],
-            user_followme: followuserid ? followuserid.followers : []
+            user_follower: followuserid ? followuserid.followers : []
             
         });
 
@@ -151,22 +151,22 @@ export const folloWers = async (req: Request, res: Response) => {
         //Puede ser más adecuado para situaciones donde la paginación es simple y directa
         const total = await follow.countDocuments();
         //calcular el indice de inicio de la paginacion
-        let itemPage = 5;
-        const starIndex = (page - 1) * itemPage;
+        //let itemPage = 5;
+        const starIndex = (page - 1) * itemPerPage;
         //consultar usuarios seguidos
         let result = await follow.find({ followed: identity })
             .populate('user followed', '-password -role -__v -email')
-            .skip(starIndex).limit(itemPage);
+            .skip(starIndex).limit(itemPerPage);
         //listado de usuarios me siguen a mi mediante un array de usuario de los que me siguen y sigo como identificado
         let followuserid = await followsUsersId(identity);
         return res.status(200).json({
             status: "success",
             message: "Listado de usuario que me siguen",
-            result,
+            follows: result,
             total,
             pages: Math.ceil(total / itemPerPage),
             user_following: followuserid ? followuserid.following : [],
-            user_followme: followuserid ? followuserid.followers : []
+            user_follower: followuserid ? followuserid.followers : []
         });
 
     } catch (error) {
