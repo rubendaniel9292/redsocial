@@ -26,6 +26,10 @@ Detalles adicionales:
 
 Alertas y a loadings personalizados
 
+Detalles pendientes:
+
+que se cambie el contador de manera dinamica al seguir o dejar de seguir usuarios
+
 
 
 

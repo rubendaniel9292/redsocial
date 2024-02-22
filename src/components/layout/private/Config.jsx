@@ -36,9 +36,14 @@ const Config = () => {
       delete data.user.password;
       setAuth(data.user);//actualiza el estado que guarda la informacion
       setSaved('saved');
+      console.log(data.status);
+    } else if (data.status === 'warning') {
+      setSaved('warning');
+      console.log(data.status);
     } else {
       setSaved('error');
       //console.log(!!data.user);//doble negacion para convertir un valor a su equivalente booleano
+      console.log(data.status);
     }
 
     //subida de imagenes
@@ -57,11 +62,13 @@ const Config = () => {
       });
 
       const upLoadData = await upLoadRequest.json();
-      
+
       if (upLoadData.status === 'success' && upLoadData.user) {
         delete upLoadData.user.password;
         setAuth(upLoadData.user);
         setSaved('saved');
+      } else if (data.status === 'warning') {
+        setSaved('warning');
       } else {
         setSaved('error');
       }
@@ -83,6 +90,10 @@ const Config = () => {
 
         {saved === 'error' ?
           <strong className="alert alert-danger">El usuario no se ha actualizado !!</strong>
+          : ''
+        }
+        {saved === 'warning' ?
+          <strong className="alert alert-danger">Correo ya esta siendo utilizado por otro usuario !!. Utilice otro</strong>
           : ''
         }
         <br></br>

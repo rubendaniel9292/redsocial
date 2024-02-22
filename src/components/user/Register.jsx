@@ -7,7 +7,7 @@ import UserFrom from "../../hooks/UserFrom";
 const Register = () => {
 
     const { form, changed } = UserFrom({});
-    const [saved, setSaved] = useState('not_sended')
+    const [saved, setSaved] = useState('')
     const saveUser = async (e) => {
         //prevenir atualziacion de pantalla
         e.preventDefault();
@@ -25,6 +25,8 @@ const Register = () => {
         const data = await request.json();
         if (data.status === 'success') {
             setSaved('saved');
+        } else if (data.status === 'warning') {
+            setSaved('warning')
         } else {
             setSaved('error')
         }
@@ -37,8 +39,9 @@ const Register = () => {
             </header>
 
             <div className="content__posts">
-                <strong className="alert alert-success">{saved == 'saved' ? 'Usuario registrado correctamente.' : ''}</strong>
-                <strong className="alert alert-danger">{saved == 'error' ? 'Usuario no registrado correctamente.' : ''}</strong>
+                <strong className="alert alert-success">{saved === 'saved' ? 'Usuario registrado correctamente.' : ''}</strong>
+                <strong className="alert alert-danger">{saved === 'error' ? 'Usuario no registrado correctamente.' : ''}</strong>
+                <strong className="alert alert-danger">{saved === 'warning' ? 'Nombre de usuario o correo ya existen. Utilice otro' : ''}</strong>
                 <form className="register-from" onSubmit={saveUser}>
                     <div className="form-group">
                         <label htmlFor="name">Nombres</label>
