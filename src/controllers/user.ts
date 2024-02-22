@@ -49,8 +49,8 @@ export const register = async (req: Request, res: Response) => {
             ]
         }).select({ 'password': 0 }).then(async (users) => {
             if (users && users.length) {
-                return res.status(200).json({
-                    status: 'success', message: 'el usuario ya existe'
+                return res.status(404).json({
+                    status: 'warning', message: 'el usuario ya existe'
                 });
             };
             /*
@@ -236,12 +236,36 @@ export const update = async (req: Request, res: Response) => {
     try {
         const userToUpdate = req.body;
         const userIdentity = req.user as any;
-
         delete userToUpdate.iat;
         delete userToUpdate.exp;
         delete userToUpdate.role;
         delete userToUpdate.image;
+        /*
+        comprobar si el email o el nick ya existen en otros usuarios
+        verificar si el email o el nick proporcionados en la solicitud de actualización ya están en uso por otro usuario
+        busca si algun correo o nick es igual al que estoy ingresando en el body
+        */
 
+        const existingUser = await User.findOne({
+            $or: [
+                { email: userToUpdate.email!.toLocaleLowerCase() },
+                { nick: userToUpdate.nick!.toLocaleLowerCase() }
+            ]
+        }).select({ 'password': 0 });
+        /* 
+        1: verifica si existingUser existe y no es null ni undefined.
+        2: compara el _id del usuario existente con el _id del usuario que está realizando la actualización
+        Si los _id son diferentes, significa que estamos tratando con usuarios diferentes, 
+        lo que sugiere que el email o el nick del usuario existente ya están en uso por otro usuario.
+         Si ambas condiciones son verdaderas, significa que el email o el nick ya están en uso por otro usuario
+        */
+
+        if (existingUser && existingUser._id !== userIdentity!.id) {
+            return res.status(400).json({
+                status: 'warning', 
+                message: 'el usuario o correo ya existe. Utilice otro'
+            });
+        }
         if (userToUpdate.password) {
             //cifrar la contraseña de manera mas directa medaite promesas
             const hashedPassword = await bcrypt.hash(userToUpdate.password, 10);
@@ -257,8 +281,12 @@ export const update = async (req: Request, res: Response) => {
         }
 
         let userUpdated = await User.findByIdAndUpdate(userIdentity.id, userToUpdate, { new: true });
+        /*Si configura new: true, findOneAndUpdate() le proporcionará el objeto después de aplicar la actualización.*/
 
-        return res.status(200).json({ status: 'success', message: 'Usuario actualizado correctamente', user: userUpdated });
+        return res.status(200).json({
+            status: 'success',
+            message: 'Usuario actualizado correctamente', user: userUpdated
+        });
     } catch (error) {
         return res.status(500).json({ status: 'error', message: 'Error al actualizar usuarios', error });
     }
