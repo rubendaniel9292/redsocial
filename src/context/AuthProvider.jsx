@@ -41,7 +41,7 @@ const AuthProvider = ({ children }) => {
             const userObj = JSON.parse(user);//acceder al objeto user
             const userId = userObj._id;//obtener el usuario identificado
             //peticion ajax al backend que compruebe el token y que me devuelva todos los datos de pergil del usuario para tenerlos en el estado de auth
-            const request = await fetch(Global.url + 'user/porfile/' + userId, {
+            const request = await fetch(Global.url + 'user/profile/' + userId, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
