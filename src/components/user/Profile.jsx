@@ -3,27 +3,32 @@ import { useEffect, useState } from 'react';
 import { getProfile } from '../../helpers/getProfile';
 import { useParams, Link } from 'react-router-dom';
 import { Global } from '../../helpers/Global';
+import useAuth from '../../hooks/useAuth';
 
 
 const Profile = () => {
   const [user, setUser] = useState({});
   const [counters, setCounters] = useState({});
-
-
-  const params = useParams()
+  const { auth } = useAuth();
+  const [iFollow, setIfollow] = useState(false);
+  const params = useParams();
 
   useEffect(() => {
-    getProfile(params.userId, setUser);
+    getDatauser();
     getCounters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    getProfile(params.userId, setUser);
+    getDatauser();
     getCounters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params]);//siempre que haya un cambio en params
+  }, [params]);//siempre que haya un cambio en params se vuelve a cargar el componente y ejecutar los metodos
 
-
+  const getDatauser = async () => {
+    let datauser = await getProfile(params.userId, setUser);
+    if (datauser.followInfo.following && datauser.followInfo.following._id) setIfollow(true);
+    
+  }
 
   const getCounters = async () => {
     const request = await fetch(Global.url + 'user/counters/' + params.userId, {
@@ -34,12 +39,44 @@ const Profile = () => {
       }
     });
     const data = await request.json();
-   
+
     if (data.following) {
       setCounters(data)
     }
 
+  }
+  const follow = async (userId) => {
+    //peticion al backend
+    const request = await fetch(Global.url + 'follow/save', {
+      method: 'POST',
+      body: JSON.stringify({ followed: userId }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token')
+      }
+    });
+    const data = await request.json();
+    //cuando sea exitosa, actualziar el estado de following agregando el nuevo follow
+    if (data.status === 'success') {
+      setIfollow(true);
+    }
 
+  }
+  const unFollow = async (userId) => {
+    //peticion al backend
+    const request = await fetch(Global.url + 'follow/unfollow/' + userId, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token')
+      }
+    });
+    const data = await request.json();
+
+    //cuando sea exitosa, actualziar el estado de following filtando los datos para elimianr el antiguo user id que acabi de dejar de segrui
+    if (data.status === 'success') {
+      setIfollow(false);
+    }
   }
 
 
@@ -59,7 +96,12 @@ const Profile = () => {
           <div className="general-info__container-names">
             <div className="container-names__name">
               <h1>{user.name} {user.surname}</h1>
-              <button className="content__button content__button--right">Seguir</button>
+              {user._id != auth._id &&
+                (iFollow ?
+                  <button onClick={()=>unFollow(user._id)} className="content__button content__button--right post__button">Dejar de Seguir</button>
+                  :
+                  <button onClick={()=>follow(user._id)}className="content__button content__button--right">Seguir</button>
+                )}
             </div>
 
             <h2 className="container-names__nickname">{user.nick}</h2>

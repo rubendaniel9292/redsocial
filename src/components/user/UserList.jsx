@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import avatar from '../../assets/img/user.jpg'
 import { Global } from "../../helpers/Global";
@@ -60,20 +61,20 @@ const UserList = ({ users, getUsers, following, setFollowing, more, loading, pag
                                 <div className="post__container">
 
                                     <div className="post__image-user">
-                                        <a href="#" className="post__image-link">
+                                        <Link to={"/social/perfil/"+user._id} className="post__image-link">
                                             <img
                                                 src={user.image !== 'default.png' ? Global.url + 'user/avatar/' + user.image : avatar}
                                                 className="post__user-image"
                                                 alt="Foto de perfil"
                                             />
-                                        </a>
+                                        </Link>
                                     </div>
 
                                     <div className="post__body">
                                         <div className="post__user-info">
-                                            <a href="#" className="user-info__name">{user.name} {user.surname}</a>
+                                            <Link to={"/social/perfil/"+user._id} className="user-info__name">{user.name} {user.surname}</Link>
                                             <span className="user-info__divider"> | </span>
-                                            <a href="#" className="user-info__create-date">{user.created_at}</a>
+                                            <Link to={"/social/perfil/"+user._id} className="user-info__create-date">{user.created_at}</Link>
                                         </div>
                                         <h4 className="post__content">{user.bio}</h4>
                                     </div>

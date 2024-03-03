@@ -98,8 +98,9 @@ const Sidebar = () => {
                                 />
                             </div>
 
+
                             <div className="general-info__container-names">
-                                <a href="#" className="container-names__name">{auth.name} {auth.surname}</a>
+                                <Link to={"/social/perfil/" + auth._id} className="container-names__name">{auth.name} {auth.surname}</Link>
                                 <p className="container-names__nickname">{auth.nick}</p>
                             </div>
                         </div>
@@ -109,13 +110,13 @@ const Sidebar = () => {
                             <div className="stats__following">
                                 <Link to={'/social/siguiendo/' + auth._id} className="following__link">
                                     <span className="following__title">Siguiendo</span>
-                                    <span className="following__number">{counters.following}</span>
+                                    <span className="following__number">{counters.following >= 1 ? counters.following : 0}</span>
                                 </Link>
                             </div>
                             <div className="stats__following">
                                 <Link to={'/social/seguidores/' + auth._id} className="following__link">
                                     <span className="following__title">Seguidores</span>
-                                    <span className="following__number">{counters.followed}</span>
+                                    <span className="following__number">{counters.followed >= 1 ? counters.followed : 0}</span>
                                 </Link>
                             </div>
 
@@ -123,7 +124,7 @@ const Sidebar = () => {
                             <div className="stats__following">
                                 <Link to={"/social/perfil/" + auth._id} className="following__link">
                                     <span className="following__title">Publicaciones</span>
-                                    <span className="following__number">{counters.publications}</span>
+                                    <span className="following__number">{counters.publications >= 1 ? counters.publications : 0}</span>
                                 </Link>
                             </div>
 
@@ -150,7 +151,7 @@ const Sidebar = () => {
 
                             <div className="form-post__inputs">
                                 <label htmlFor="image" className="form-post__label">Sube tu foto</label>
-                                <input id='file'type="file" name="file" className="form-post__image" />
+                                <input id='file' type="file" name="file" className="form-post__image" />
                             </div>
 
                             <input type="submit" value="Enviar" className="form-post__btn-submit" />

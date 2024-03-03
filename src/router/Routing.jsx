@@ -11,6 +11,7 @@ import People from '../components/user/People';
 import Config from '../components/layout/private/Config';
 import Following from '../components/follow/Following';
 import Followers from '../components/follow/Followers';
+import Profile from '../components/user/Profile';
 const Routing = () => {
     return (
         // Uso de Contexto en la aplicación
@@ -31,6 +32,7 @@ const Routing = () => {
                         <Route path='config' element={<Config></Config>}></Route>
                         <Route path='siguiendo/:userId' element={<Following></Following>}></Route>
                         <Route path='seguidores/:userId' element={<Followers></Followers>}></Route>
+                        <Route path='perfil/:userId' element={<Profile></Profile>}></Route>
                     </Route>
 
                     <Route path='*'
