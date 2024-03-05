@@ -1,11 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import avatar from '../../assets/img/user.jpg'
 import { useEffect, useState } from 'react';
 import { getProfile } from '../../helpers/getProfile';
 import { useParams, Link } from 'react-router-dom';
 import { Global } from '../../helpers/Global';
 import useAuth from '../../hooks/useAuth';
+import PublicationList from '../publication/PublicationList';
 
 const Profile = () => {
   const [user, setUser] = useState({});
@@ -114,32 +113,11 @@ const Profile = () => {
       if (!newProfile && publications.length >= (data.total - data.publications.length)) {
         setMore(false);
       }
-      if(data.pages <=1){
+      if (data.pages <= 1) {
         setMore(false)
       }
     }
   }
-  const nextPage = async () => {
-    let next = page + 1;
-    setPage(next);
-    getPublications(next);
-  }
-
-  const deletePublication = async (publicationId) => {
-    const request = await fetch(Global.url + 'publication/remove/' + publicationId, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token')
-      }
-    });
-    const data = await request.json();
-    getPublications(1, true);
-    setPage(1);
-    setMore(true);
-
-  }
-
 
   return (
     <>
@@ -195,66 +173,15 @@ const Profile = () => {
 
         </div>
       </header>
-
-      <div className='content__posts'>
-        {
-          publications.map(publication => {
-            return (
-              <article className="posts__post" key={publication._id}>
-
-                <div className="post__container">
-
-                  <div className="post__image-user">
-                    <Link to={"/social/perfil/" + publication.user._id} className="post__image-link">
-                      <img
-                        src={publication.user.image !== 'default.png' ? Global.url + 'user/avatar/' + publication.user.image : avatar}
-                        className="post__user-image"
-                        alt="Foto de perfil"
-                      />
-                    </Link>
-                  </div>
-
-                  <div className="post__body">
-                    <div className="post__user-info">
-                      <a href="#" className="user-info__name">{publication.user.name} {publication.user.surname}</a>
-                      <span className="user-info__divider"> | </span>
-                      <a href="#" className="user-info__create-date">{publication.created_at}</a>
-                    </div>
-                    <h4 className="post__content">{publication.text}</h4>
-                    {
-                      publication.file && <img src={Global.url+'publication/media/'+publication.file}></img>
-                    }
-                  </div>
-
-                </div>
-                {auth._id === publication.user._id &&
-                  <div className="post__buttons">
-                    <button onClick={()=>deletePublication(publication._id)} className="post__button">
-                      <i ><FontAwesomeIcon icon={faTrash} /></i>
-
-                    </button>
-                  </div>
-                }
-
-
-              </article>
-
-            )
-          })
-        }
-
-      </div>
-
-
-
-      <div className="content__container-btn">
-        {more && publications.length >= 5 &&
-          <button className="content__btn-more-post" onClick={nextPage}>
-            Ver mas publicaciones
-          </button>
-        }
-
-      </div>
+      <PublicationList
+        publications={publications}
+        getPublications={getPublications}
+        page={page}
+        setPage={setPage}
+        more={more}
+        setMore={setMore}
+      >
+      </PublicationList>
     </>
   )
 }

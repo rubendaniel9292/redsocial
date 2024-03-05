@@ -1,51 +1,65 @@
+import { useEffect, useState } from 'react';
+import { Global } from '../../helpers/Global';
+import PublicationList from '../publication/PublicationList';
 
-import avatar from '../../assets/img/user.jpg'
-//import useAuth from '../../hooks/useAuth'
 const Feed = () => {
+    const [publications, setPublications] = useState([]);
+    const [page, setPage] = useState(1);
+    const [more, setMore] = useState(true);
+    useEffect(() => {
+        getPublications(1, false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    const getPublications = async (nextPage = 1, showNews = true) => {
+        if (showNews) {
+            setPublications([]);
+            setPage(1);
+            nextPage = 1;
+        }
+        const request = await fetch(Global.url + 'publication/feedpost/' + nextPage, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+        const data = await request.json();
 
+        if (data.status === 'success') {
+            let newPublications = data.publications;
+            //si el nuervo perfil es falso y hay mas de una publicacion, añadir publica ciones al estado, 
+            //caso contrario resetar y agregar las publicaciones nuevas de ese perfil
+            if (!showNews && data.publications.length >= 1) {
+                newPublications = [...publications, ...data.publications]
+            }
+            setPublications(newPublications);
+            //comprobar la longitud del estado es mayor o igual a total menos la longitud del ultimo elemento del array ()
+            if (!showNews && publications.length >= (data.total - data.publications.length)) {
+                setMore(false);
+                console.log(publications)
+            }
+            if (data.pages <= 1) {
+                setMore(false)
+            }
+        }
+    }
 
     return (
         <>
             <header className="content__header">
                 <h1 className="content__title">Timeline</h1>
-                <button className="content__button">Mostrar nuevas</button>
+                <button className="content__button" onClick={() => getPublications(1, true)}>Mostrar nuevas</button>
             </header>
-
-
-            <div className="posts__post">
-
-                <div className="post__container">
-
-                    <div className="post__image-user">
-                        <a href="#" className="post__image-link">
-                            <img src={avatar} className="post__user-image" alt="Foto de perfil" />
-                        </a>
-                    </div>
-
-                    <div className="post__body">
-                        <div className="post__user-info">
-                            <a href="#" className="user-info__name">Victor Robles</a>
-                            <span className="user-info__divider"> | </span>
-                            <a href="#" className="user-info__create-date">Hace 1 hora</a>
-                        </div>
-                        <h4 className="post__content">Hola, buenos dias.</h4>
-                    </div>
-
-                </div>
-
-                <div className="post__buttons">
-
-                    <a href="#" className="post__button">
-                        <i className="fa-solid fa-trash-can"></i>
-                    </a>
-
-                </div>
-            </div>
-            <div className="content__container-btn">
-                <button className="content__btn-more-post">
-                    Ver mas publicaciones
-                </button>
-            </div>
+            <PublicationList
+                publications={publications}
+                getPublications={getPublications}
+                page={page}
+                setPage={setPage}
+                more={more}
+                setMore={setMore}
+            >
+            </PublicationList>
+          
         </>
     )
 }
