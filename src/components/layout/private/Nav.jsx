@@ -53,7 +53,7 @@ const Nav = () => {
                     </a>
                 </li>
                 <li className="list-end__item">
-                    <NavLink to={"/social/perfil/"+auth._id} className="list-end__link">
+                    <NavLink to={"/social/perfil/" + auth._id} className="list-end__link">
                         <span className="list-end__name">{auth.nick}</span>
                         <i className="fa-solid fa-caret-down"></i>
                     </NavLink>

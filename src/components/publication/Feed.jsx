@@ -2,8 +2,8 @@
 import avatar from '../../assets/img/user.jpg'
 //import useAuth from '../../hooks/useAuth'
 const Feed = () => {
- 
-    
+
+
     return (
         <>
             <header className="content__header">

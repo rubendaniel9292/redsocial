@@ -61,7 +61,7 @@ const UserList = ({ users, getUsers, following, setFollowing, more, loading, pag
                                 <div className="post__container">
 
                                     <div className="post__image-user">
-                                        <Link to={"/social/perfil/"+user._id} className="post__image-link">
+                                        <Link to={"/social/perfil/" + user._id} className="post__image-link">
                                             <img
                                                 src={user.image !== 'default.png' ? Global.url + 'user/avatar/' + user.image : avatar}
                                                 className="post__user-image"
@@ -72,9 +72,9 @@ const UserList = ({ users, getUsers, following, setFollowing, more, loading, pag
 
                                     <div className="post__body">
                                         <div className="post__user-info">
-                                            <Link to={"/social/perfil/"+user._id} className="user-info__name">{user.name} {user.surname}</Link>
+                                            <Link to={"/social/perfil/" + user._id} className="user-info__name">{user.name} {user.surname}</Link>
                                             <span className="user-info__divider"> | </span>
-                                            <Link to={"/social/perfil/"+user._id} className="user-info__create-date">{user.created_at}</Link>
+                                            <Link to={"/social/perfil/" + user._id} className="user-info__create-date">{user.created_at}</Link>
                                         </div>
                                         <h4 className="post__content">{user.bio}</h4>
                                     </div>
