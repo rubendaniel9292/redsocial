@@ -12,7 +12,7 @@ routerPublication.get('/prueba-publication', pruebaPublicaion);
 routerPublication.get('/detail/:id', detail, auth);
 routerPublication.post('/save', auth, save);
 routerPublication.delete('/remove/:id', auth, remuvePublication);
-routerPublication.get('/user/:id', userPublication, auth);
+routerPublication.get('/user/:id/:page?', userPublication, auth);
 
 
 //confuguracion de subida

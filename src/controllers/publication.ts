@@ -170,7 +170,7 @@ export const upLoap = async (req: Request, res: Response) => {
         } else {
             //5: actualiza el articulo si todo sale bien del usuario identificado y de una publicacion
             let id = (req.user as any).id;// Realiza un cast a 'any' para acceder a '_id'
-            const publicationUpDated = await publication.findByIdAndUpdate({ 'user': id, '_id': publicationId }, { file: req.file!.filename }, { new: true });
+            const publicationUpDated = await publication.findOneAndUpdate({ 'user': id, '_id': publicationId }, { file: req.file!.filename }, { new: true });
             if (!publicationUpDated) {
                 return res.status(500).send({
                     status: "error",
@@ -223,16 +223,10 @@ export const mediaPost = (req: Request, res: Response) => {
 
 }
 //7: listar publicacioens del feed (usuarios que estoy siguiende)
-
-
 export const feedPublication = async (req: Request, res: Response) => {
-
     try {
-
         let userId = (req.user as any).id;
-
         if (userId) {
-
             //comprobar si me llega la pagina
             let page = 1;
             if (req.params.page) page = parseInt(req.params.page);
@@ -284,7 +278,7 @@ export const feedPublication = async (req: Request, res: Response) => {
                 status: "success",
                 message: 'Feed de publicaciones',
                 userId: myFollowing,
-                publications,
+                publications: publications,
                 total,
                 pages: Math.ceil(total / itemPerPage),
             });
@@ -295,7 +289,6 @@ export const feedPublication = async (req: Request, res: Response) => {
             });
         }
     } catch (error) {
-
         return res.status(500).send({
             status: "error",
             message: 'ocurrio un error durante la carga del feed',
