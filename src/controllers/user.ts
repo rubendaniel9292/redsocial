@@ -8,6 +8,8 @@ import path from 'path';
 import { followThisUser, followsUsersId } from '../services/followServices';
 import follow from '../models/follow';
 import publication from '../models/publication';
+import validate from '../helpers/validate';
+
 
 
 // extender el tipo Request para incluir la propiedad user y que no de error, 
@@ -40,6 +42,16 @@ export const register = async (req: Request, res: Response) => {
                 message: 'Faltan datos por enviar'
             });
         }
+        //validacion avanzada con validator: opcion 1 para validar el registro
+        try {
+            validate(params, 1);
+        } catch (errro) {
+            return res.status(400).send({
+                status: 'error',
+                message: 'validacion avanzada no superada'
+            });
+        }
+
 
         //control de usuarios duplicados
         await User.find({
@@ -91,7 +103,7 @@ export const register = async (req: Request, res: Response) => {
         }).catch((error) => {
             return res.status(500).json({
                 status: 'error',
-                message: 'error en la consulta de usuarios',
+                message: 'error en el registro de usuarios',
                 error
             });
         })
@@ -236,36 +248,52 @@ export const update = async (req: Request, res: Response) => {
     try {
         const userToUpdate = req.body;
         const userIdentity = req.user as any;
+        console.log('usuario identidicado: ', userIdentity);
         delete userToUpdate.iat;
         delete userToUpdate.exp;
         delete userToUpdate.role;
         delete userToUpdate.image;
-        /*
-        comprobar si el email o el nick ya existen en otros usuarios
-        verificar si el email o el nick proporcionados en la solicitud de actualización ya están en uso por otro usuario
-        busca si algun correo o nick es igual al que estoy ingresando en el body
-        */
-
-        const existingUser = await User.findOne({
-            $or: [
-                { email: userToUpdate.email!.toLocaleLowerCase() },
-                { nick: userToUpdate.nick!.toLocaleLowerCase() }
-            ]
-        }).select({ 'password': 0 });
-        /* 
-        1: verifica si existingUser existe y no es null ni undefined.
-        2: compara el _id del usuario existente con el _id del usuario que está realizando la actualización
-        Si los _id son diferentes, significa que estamos tratando con usuarios diferentes, 
-        lo que sugiere que el email o el nick del usuario existente ya están en uso por otro usuario.
-         Si ambas condiciones son verdaderas, significa que el email o el nick ya están en uso por otro usuario
-        */
-
-        if (existingUser && existingUser._id !== userIdentity!.id) {
-            return res.status(400).json({
-                status: 'warning', 
-                message: 'el usuario o correo ya existe. Utilice otro'
-            });
+        // Verificar si el correo electrónico ha sido modificado en el input 
+        //caso contrario omitir la validación del correo electrónico y proceder con la actualización de otros campos.
+        //sino se modifican ningun cammpo, quiere decir que hay datos repetidos al menos el correo
+        if (userToUpdate.email !== userIdentity.email) {
+            try {
+                //validacion avanzada con validator: opcion 2 para validar el update, solo si ha sido modificado
+                validate(userToUpdate, 2);
+                const existingUser = await User.findOne({
+                    $or: [
+                        { email: userToUpdate.email!.toLocaleLowerCase() },
+                        //{ nick: userToUpdate.nick!.toLocaleLowerCase() }
+                    ]
+                }).select({ 'password': 0 });
+                /* 
+                1: verifica si existingUser existe y no es null ni undefined.
+                2: compara el _id del usuario existente con el _id del usuario que está realizando la actualización
+                Si los _id son diferentes, significa que estamos tratando con usuarios diferentes, 
+                lo que sugiere que el email o el nick del usuario existente ya están en uso por otro usuario.
+                 Si ambas condiciones son verdaderas, significa que el email o el nick ya están en uso por otro usuario
+                */
+                console.log('usuario existente', existingUser);
+                /*
+    comprobar si el email o el nick ya existen en otros usuarios
+    verificar si el email o el nick proporcionados en la solicitud de actualización ya están en uso por otro usuario
+    busca si algun correo o nick es igual al que estoy ingresando en el body
+    */
+                if (existingUser && existingUser._id !== userIdentity!.id) {
+                    return res.status(400).json({
+                        status: 'warning',
+                        message: 'el usuario o correo ya existe. Utilice otro'
+                    });
+                }
+            } catch (errro) {
+                return res.status(400).send({
+                    status: 'error',
+                    message: 'validacion avanzada no superada'
+                });
+            }
         }
+
+        // Actualizar la contraseña si se proporciona
         if (userToUpdate.password) {
             //cifrar la contraseña de manera mas directa medaite promesas
             const hashedPassword = await bcrypt.hash(userToUpdate.password, 10);
