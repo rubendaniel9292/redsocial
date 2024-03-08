@@ -5,7 +5,8 @@ import avatar from '../../assets/img/user.jpg'
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import useAuth from '../../hooks/useAuth';
-import ReactTimeAgo from 'react-time-ago'
+import ReactTimeAgo from 'react-time-ago';
+import  alerts from "../../helpers/Alerts";
 
 const PublicationList = ({
     publications,
@@ -33,10 +34,9 @@ const PublicationList = ({
             getPublications(1, true);
             setPage(1);
             setMore(true);
+            alerts('Eliminación exitosa', 'Publicación eliminada exitosamente', 'success');
 
-        }
-
-
+        }else alerts('Error', 'Ocurrió un error al intentar eliminar la publicación', 'error');
     }
 
     return (

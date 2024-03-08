@@ -1,10 +1,11 @@
 import UserFrom from "../../hooks/UserFrom";
-import { useState } from "react";
+//import { useState } from "react";
 import { Global } from "../../helpers/Global";
 import useAuth from "../../hooks/useAuth";
+import alerts  from "../../helpers/Alerts";
 const Login = () => {
   const { form, changed } = UserFrom({});
-  const [loged, setLoged] = useState('not_loged');
+  //const [loged, setLoged] = useState('not_loged');
   const { setAuth } = useAuth();
   const loginUser = async (e) => {
     //prevenir atualziacion de pantalla
@@ -24,17 +25,19 @@ const Login = () => {
     if (data.status === 'success') {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.userRecord));
-      setLoged('login');
+      //setLoged('login');
       //redireccion 
-
+      alerts('Login exitoso', 'Bienvenido/a...','success');
       setTimeout(() => {
         //setear datos en el para que redireciones y no entrar manualamente a /social
         setAuth(data.userRecord);
         window.location.reload();//realiza el navigate a public o private layout de manera automatica
-      }, 500);
+      }, 1000);
+      
 
     } else {
-      setLoged('error')
+      //setLoged('error')
+      alerts('Error','Usuario o contraseña incorrecta','error');
     }
 
   }
@@ -43,8 +46,10 @@ const Login = () => {
       <header className="content__header content__header--public">
         <h1 className="content__title">Login</h1>
       </header>
+      {/*
       <strong className="alert alert-success">{loged == 'login' ? 'Usuario logeado correctamente.' : ''}</strong>
       <strong className="alert alert-danger">{loged == 'error' ? 'Usuario no logeado.' : ''}</strong>
+       */}
 
       <div className="content__posts">
         <form className="form-login" onSubmit={loginUser}>

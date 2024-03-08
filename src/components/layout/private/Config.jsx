@@ -1,22 +1,39 @@
-import { useState } from "react";
+//import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { Global } from '../../../helpers/Global';
 import avatar from '../../../assets/img/user.jpg'
 import { SerializeFrom } from "../../../helpers/SerializeFrom";
+import alerts from "../../../helpers/Alerts";
 
 const Config = () => {
-  const [saved, setSaved] = useState('');
-
+  //const [saved, setSaved] = useState('');
   const { auth, setAuth } = useAuth();
-
   const updateUser = async (e) => {
     e.preventDefault();
     //recoger datos del formulario
     const token = localStorage.getItem('token')
     let newDatauser = SerializeFrom(e.target);
+
+    // Verificar si se han realizado cambios en los datos del usuario
+    let dataChanged = false;
+    if (
+      newDatauser.name !== auth.name ||
+      newDatauser.surname !== auth.surname ||
+      newDatauser.bio !== auth.bio ||
+      newDatauser.email !== auth.email
+    ) {
+      dataChanged = true;
+    }
+
+    // Si no hay cambios en los datos del usuario, no enviar la solicitud de actualización
+    if (!dataChanged) {
+      alerts('Advertencia: ', 'Ingrese informacion nueva en al menos uno de los campos del formulario', 'warning');
+      //setSaved('warning1');
+      return;
+    }
     //borrar propiedad innecesara
     delete newDatauser.file;
-    setSaved('loading');
+    //setSaved('loading');
     //guardar y actualizar datos del en el la bd
     const request = await fetch(Global.url + 'user/update', {
       method: 'PUT',
@@ -30,20 +47,19 @@ const Config = () => {
     //esperar el resultado y hacer peticion para convertir cualquier respuesta en un objeto de JS usable
     const data = await request.json();
     //console.log(data);
-
     if (data.status === 'success' && data.user) {
       //no obtener la contraseña nunca
       delete data.user.password;
       setAuth(data.user);//actualiza el estado que guarda la informacion
-      setSaved('saved');
-      console.log(data.status);
+      alerts('Actualización exitosa', 'Usuario actualizado correctamente !!', 'success');
+      //setSaved('saved');
     } else if (data.status === 'warning') {
-      setSaved('warning');
-      console.log(data.status);
+      //setSaved('warning');
+      alerts('Advertencia', 'Correo ya esta siendo utilizado por otro usuario!!. Utilice otro', 'warning');
     } else {
-      setSaved('error');
+      //setSaved('error');
       //console.log(!!data.user);//doble negacion para convertir un valor a su equivalente booleano
-      console.log(data.status);
+      alerts('Error durante la actualización', 'El usuario no se ha actualizado !!', 'error');
     }
 
     //subida de imagenes
@@ -66,17 +82,19 @@ const Config = () => {
       if (upLoadData.status === 'success' && upLoadData.user) {
         delete upLoadData.user.password;
         setAuth(upLoadData.user);
-        setSaved('saved');
+        //setSaved('saved');
+        alerts('Actualización exitosa', 'Usuario actualizado correctamente !!', 'success');
+        //setSaved('saved');
+
       } else if (data.status === 'warning') {
-        setSaved('warning');
+        //setSaved('warning');
+        alerts('Advertencia', 'El usuario no se ha actualizado !!', 'warning');
       } else {
-        setSaved('error');
+        //setSaved('error');
+        alerts('Error durante la actualización', 'El usuario no se ha actualizado !!', 'error');
       }
     }
-
   }
-
-
 
   return (
     <>
@@ -84,7 +102,9 @@ const Config = () => {
         <h1 className="content__title">Actualizar perfil</h1>
       </header>
       <div className="content__posts">
-        {saved === 'saved' ?
+        {
+          /* 
+                {saved === 'saved' ?
           <strong className="alert alert-success"> Usuario actualizado correctamente !!</strong>
           : ''}
 
@@ -93,9 +113,16 @@ const Config = () => {
           : ''
         }
         {saved === 'warning' ?
-          <strong className="alert alert-danger">Correo ya esta siendo utilizado por otro usuario !!. Utilice otro</strong>
+          <strong className="alert alert-danger">Correo ya esta siendo utilizado por otro usuario o está repetido!!. Utilice otro</strong>
           : ''
         }
+        {saved === 'warning1' ?
+          <strong className="alert alert-danger">Ingrese informacion nueva en al menos uno de los campos del formulario</strong>
+          : ''
+        }
+          */
+        }
+
         <br></br>
         <form id="myForm" className="config-from" onSubmit={updateUser}>
           <div className="form-group">
@@ -147,5 +174,4 @@ const Config = () => {
     </>
   )
 }
-
 export default Config;

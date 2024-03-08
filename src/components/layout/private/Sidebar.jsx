@@ -1,15 +1,15 @@
-
 import avatar from '../../../assets/img/user.jpg'
 import { Global } from '../../../helpers/Global';
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import UserFrom from '../../../hooks/UserFrom'
-import { useState } from 'react';
+//import { useState } from 'react';
+import alerts from '../../../helpers/Alerts';
 const Sidebar = () => {
     /*acceder al valor del contexto: no accede y no se carga el componente */
     const { auth, counters } = useAuth();
     const { form, changed } = UserFrom({});
-    const [stored, setStored] = useState("not_stored");
+    //const [stored, setStored] = useState("not_stored");
     // Verificar si auth es undefined antes de acceder a sus propiedades
     if (!auth) {
         // Manejar el caso donde auth es undefined, por ejemplo, mostrando un mensaje de error o tomando una acción predeterminada.
@@ -17,17 +17,12 @@ const Sidebar = () => {
         return null; // O realiza alguna acción adecuada para tu aplicación
     }
 
-
-
     const savePublication = async (e) => {
         e.preventDefault();
-
         const token = localStorage.getItem("token");
-
         // Recoger datos del formulario
         let newPublication = form;
         newPublication.user = auth._id;
-
         // Hacer request para guardar en bd
         const request = await fetch(Global.url + "publication/save", {
             method: "POST",
@@ -37,16 +32,13 @@ const Sidebar = () => {
                 "Authorization": token
             }
         });
-
         const data = await request.json();
-        console.log(data)
 
         // Mostrar mensaje de exito o error
         if (data.status === "success") {
-            setStored("stored");
-        } else {
-            setStored("error");
-        }
+            alerts('Publicación exitosa', 'Publicación añadida exitosamente', 'success');
+            //setStored("stored");
+        } else alerts('Error', 'Ocurrió un error al intentar añadir la publicación', 'error');
 
         // Subir imagen
         const fileInput = document.querySelector("#file");
@@ -67,10 +59,9 @@ const Sidebar = () => {
             const uploadData = await uploadRequest.json();
 
             if (uploadData.status == "success") {
-                setStored("stored");
-            } else {
-                setStored("error");
-            }
+                //setStored("stored");
+                alerts('Publicación exitosa', 'Publicación añadida exitosamente', 'success');
+            } else alerts('Error', 'Ocurrió un error al intentar añadir la publicación', 'error');
         }
 
         //if (data.status = "success" && uploadData.status == "success"){
@@ -81,7 +72,6 @@ const Sidebar = () => {
 
     return (
         <>
-
             <aside className="layout__aside">
 
                 <header className="aside__header">
@@ -97,7 +87,6 @@ const Sidebar = () => {
                                     alt="Foto de perfil"
                                 />
                             </div>
-
 
                             <div className="general-info__container-names">
                                 <Link to={"/social/perfil/" + auth._id} className="container-names__name">{auth.name} {auth.surname}</Link>
@@ -120,7 +109,6 @@ const Sidebar = () => {
                                 </Link>
                             </div>
 
-
                             <div className="stats__following">
                                 <Link to={"/social/perfil/" + auth._id} className="following__link">
                                     <span className="following__title">Publicaciones</span>
@@ -132,15 +120,18 @@ const Sidebar = () => {
                         </div>
                     </div>
 
-
                     <div className="aside__container-form">
-                        {stored == "stored" ?
+                        {
+                            /*
+                               {stored == "stored" ?
                             <strong className="alert alert-success"> Publicada correctamente !!</strong>
                             : ''}
 
                         {stored == "error" ?
                             <strong className="alert alert-danger"> No se ha publicado nada !!</strong>
                             : ''}
+                             */
+                        }
 
                         <form id='publication-form' className="container-form__form-post" onSubmit={savePublication}>
 

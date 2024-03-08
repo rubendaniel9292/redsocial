@@ -76,7 +76,7 @@ body {
     flex-direction: row;
     align-items: center;
     margin-bottom: 2rem;
-    height: 6.3rem;
+    height: 6rem;
 
 }
 
@@ -289,13 +289,13 @@ body {
 .layout__aside{
     grid-area: aside;
     margin-right: 2rem;
-    border: 2px solid violet;
+    /*border: 2px solid violet;*/
     
 }
 
 .aside__container{
     width: 100%;
-    border: 2px solid blue;
+    /*border: 2px solid blue;*/
     
 }
 
@@ -304,7 +304,7 @@ body {
     padding: 2.5rem;
     margin-bottom: 2rem;
     border-radius: 0.4rem;
-    border: 2px solid red;
+    /*border: 2px solid red;*/
 }
 
 .profile-info__general-info{
@@ -378,12 +378,12 @@ body {
     border: 1px solid var(--color-border-post);
     padding: 2.5rem;
     border-radius: 0.4rem;
-    border: 2px solid black;
+    /*border: 2px solid black;*/
 }
 
 .container-form__form-post{
     width: 100%;
-    border: 2px solid yellow;
+    /*border: 2px solid yellow;*/
 }
 
 form{

@@ -1,13 +1,13 @@
-import { useState } from "react";
+//import { useState } from "react";
 import { Global } from "../../helpers/Global";
 import UserFrom from "../../hooks/UserFrom";
-
+import  alerts from "../../helpers/Alerts";
 
 
 const Register = () => {
 
     const { form, changed } = UserFrom({});
-    const [saved, setSaved] = useState('')
+    //const [saved, setSaved] = useState('')
     const saveUser = async (e) => {
         //prevenir atualziacion de pantalla
         e.preventDefault();
@@ -24,13 +24,17 @@ const Register = () => {
         // recibir informacion de la request para que sea legible
         const data = await request.json();
         if (data.status === 'success') {
-            setSaved('saved');
+            //setSaved('saved');
+            alerts('Registro exitoso', 'Usuario registrado correctamente', 'success');
+            const myForm = document.querySelector("#publication-form");
+            myForm.reset();
         } else if (data.status === 'warning') {
-            setSaved('warning')
+            //setSaved('warning');
+            alerts('Datos repetidos', 'Nombre de usuario o correo ya existen. Utilice otro', 'warning')
         } else {
-            setSaved('error')
+            //setSaved('error');
+            alerts('Error', 'Usuario no registrado correctamente', 'error')
         }
-
     }
     return (
         <>
@@ -39,10 +43,13 @@ const Register = () => {
             </header>
 
             <div className="content__posts">
-                <strong className="alert alert-success">{saved === 'saved' ? 'Usuario registrado correctamente.' : ''}</strong>
+                {/**
+                    <strong className="alert alert-success">{saved === 'saved' ? 'Usuario registrado correctamente.' : ''}</strong>
                 <strong className="alert alert-danger">{saved === 'error' ? 'Usuario no registrado correctamente.' : ''}</strong>
                 <strong className="alert alert-danger">{saved === 'warning' ? 'Nombre de usuario o correo ya existen. Utilice otro' : ''}</strong>
-                <form className="register-from" onSubmit={saveUser}>
+                 */}
+
+                <form className="register-from" id='publication-form' onSubmit={saveUser}>
                     <div className="form-group">
                         <label htmlFor="name">Nombres</label>
                         <input type="text" name="name" onChange={changed}></input>

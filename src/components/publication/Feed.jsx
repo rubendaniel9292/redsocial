@@ -36,7 +36,6 @@ const Feed = () => {
             //comprobar la longitud del estado es mayor o igual a total menos la longitud del ultimo elemento del array ()
             if (!showNews && publications.length >= (data.total - data.publications.length)) {
                 setMore(false);
-                console.log(publications)
             }
             if (data.pages <= 1) {
                 setMore(false)

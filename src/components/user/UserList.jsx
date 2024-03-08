@@ -6,7 +6,8 @@ import useAuth from '../../hooks/useAuth';
 import ReactTimeAgo from 'react-time-ago'
 //recibe las props
 const UserList = ({ users, getUsers, following, setFollowing, more, loading, page, setPage }) => {
-    const { auth } = useAuth()
+    const { auth } = useAuth();
+    const token= localStorage.getItem('token');
     const nextPage = () => {
         let next = page + 1;
         setPage(next);
@@ -20,7 +21,7 @@ const UserList = ({ users, getUsers, following, setFollowing, more, loading, pag
             body: JSON.stringify({ followed: userId }),
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': token
             }
         });
         const data = await request.json();
@@ -36,7 +37,7 @@ const UserList = ({ users, getUsers, following, setFollowing, more, loading, pag
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': localStorage.getItem('token')
+                'Authorization': token
             }
         });
         const data = await request.json();

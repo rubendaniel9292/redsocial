@@ -15,6 +15,7 @@ const Profile = () => {
   const [publications, setPublications] = useState([]);
   const [page, setPage] = useState(1);
   const [more, setMore] = useState(true);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     getDatauser();
@@ -41,7 +42,7 @@ const Profile = () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token')
+        'Authorization': token
       }
     });
     const data = await request.json();
@@ -58,7 +59,7 @@ const Profile = () => {
       body: JSON.stringify({ followed: userId }),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token')
+        'Authorization': token
       }
     });
     const data = await request.json();
@@ -74,7 +75,7 @@ const Profile = () => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token')
+        'Authorization': token
       }
     });
     const data = await request.json();
@@ -90,7 +91,7 @@ const Profile = () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': localStorage.getItem('token')
+        'Authorization': token
       }
     });
     const data = await request.json();
