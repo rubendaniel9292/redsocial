@@ -15,7 +15,7 @@ import Profile from '../components/user/Profile';
 const Routing = () => {
     return (
         // Uso de Contexto en la aplicación
-        <BrowserRouter>
+        <HashRouter>
             <AuthProvider>
                 <Routes>
                     <Route path='/' element={<PublicLayout></PublicLayout>}>
@@ -49,7 +49,7 @@ const Routing = () => {
                     ></Route>
                 </Routes>
             </AuthProvider>
-        </BrowserRouter>
+        </HashRouter>
     )
 }
 
