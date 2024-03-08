@@ -19,8 +19,9 @@ const Config = () => {
     if (
       newDatauser.name !== auth.name ||
       newDatauser.surname !== auth.surname ||
+      newDatauser.bio && 
       newDatauser.bio !== auth.bio ||
-      newDatauser.email !== auth.email
+      newDatauser.email !== auth.email 
     ) {
       dataChanged = true;
     }
