@@ -1,7 +1,7 @@
 //import { useState } from "react";
 import { Global } from "../../helpers/Global";
 import UserFrom from "../../hooks/UserFrom";
-import  alerts from "../../helpers/Alerts";
+import alerts from "../../helpers/Alerts";
 
 
 const Register = () => {
@@ -40,7 +40,15 @@ const Register = () => {
         <>
             <header className="content__header">
                 <h1 className="content__title">Registro</h1>
+
             </header>
+            <h2 className="warning">RECOMENDACIONES: </h2>
+            <p className="warningp">
+
+                Esta app se ha realizado con el único fin de aprendizaje y prácticas. Se recomienda y sugiere que al
+                momento de registrarse y
+                probar la app utilice, solamente correos ficticios o inventados en lugar de correos personales reales.
+            </p>
 
             <div className="content__posts">
                 {/**
