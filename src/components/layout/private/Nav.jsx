@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList, faHouse, faUser, faEnvelope, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { faList, faHouse, faUser, faGear, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import avatar from '../../../assets/img/user.jpg'
 import { NavLink } from 'react-router-dom';
 import { Global } from '../../../helpers/Global';
@@ -32,12 +32,7 @@ const Nav = () => {
                     </NavLink>
                 </li>
 
-                <li className="menu-list__item">
-                    <a href="#" className="menu-list__link">
-                        <i><FontAwesomeIcon icon={faEnvelope} /></i>
-                        <span className="menu-list__title">Mensajes</span>
-                    </a>
-                </li>
+          
             </ul>
 
             <ul className="container-lists__list-end">

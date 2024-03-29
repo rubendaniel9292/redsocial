@@ -107,7 +107,14 @@ body {
 .menu-list__link:hover,
 .list-end__link:hover,
 .list-end__item:first-child:hover {
-  background-color: var(--color-hover-navbar);
+  background-color: var(--color-background-btn-success);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+.active {
+  background-color: var(--color-background-btn-success);
+  border-radius: 10px;
+  
 }
 
 .container-lists__list-end {
