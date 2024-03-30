@@ -5,16 +5,35 @@ import cors from 'cors';
 import routerUser from "./routes/user";
 import routerFollow from "./routes/follow";
 import routerPublication from "./routes/publication";
-
+import dotenv from 'dotenv';
+import helmet from 'helmet';
+// Cargar variables de entorno desde el archivo .env
+dotenv.config();
 console.log('api arrandada');
+
 connection();
 //creacion del servidor
+
 const app = express();
-const port = 3900;
+app.use(helmet({ contentSecurityPolicy: false }));  // Ayuda a proteger aplicaciones Express
+//const ip = process.env.IP; 
+const port = process.env.HTTP_PORT;
+const portS = process.env.HTTPS_PORT;
 
 //configuracion de cors
-app.use(cors());
-//convertir los datos del bodey a objetos JSON
+app.use(cors
+
+    ({
+        origin: '0.0.0.0', // tu dominio, ip o '0.0.0.0' para permitir cualquier origen
+        credentials: true, // Indica si se permiten credenciales (cookies, tokens de autenticación)
+        methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+        allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados HTTP permitidos
+    }));
+
+
+
+
+//convertir los datos del body a objetos JSON
 app.use(express.json());
 //decodificar los datos que llegen de un formulario normal(url encode)
 app.use(express.urlencoded({ extended: true }));
@@ -36,5 +55,9 @@ app.use('/api/follow', routerFollow);
 
 //escuchar peticiones http
 app.listen(port, () => {
-    console.log('servidor de node corriendo en el puerto ', port);
+    console.log('servidor de node corriendo correctamente');
 })
+//escuchar peticiones https (en produccion con el certificado ssl/tsl instalado)
+app.listen(portS, () => {
+    console.log('servidor de node corriendo correctamente');
+});
