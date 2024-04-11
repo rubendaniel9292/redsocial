@@ -1,6 +1,7 @@
 {
 
   "name": "red-social",
+  "homepage": "https://redsocial.danielrivasweb.com/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
